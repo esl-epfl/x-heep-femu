@@ -1,0 +1,8 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "X-HEEP-based FPGA EMUlation Platform (FEMU)"
+authors = [{name = "Simone Machetti", email = "simone.machetti@epfl.ch"}]
+dynamic = ["version", "description"]
