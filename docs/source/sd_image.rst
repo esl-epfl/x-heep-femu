@@ -1,7 +1,7 @@
 SD image
 ========
 
-This section describes the structure and content of our pre-compiled `MicroSD image <https://drive.google.com/drive/folders/1t8RyKaEcVXRckN4NoDjZ4JTD4Uzbej_i?usp=sharing>`_.
+This section describes the structure and content of our pre-compiled `MicroSD image <http://tiny.cc/femu_microsd_image>`_.
 
 Our image automatically loads the X-HEEP bitstream and performs the required initializations after booting the operating system. All the tools you need to interact with X-HEEP (implemented on the PL side of the chip) from Linux (running on the PS side of the chip) are already pre-installed on the image.
 
