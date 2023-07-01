@@ -1,0 +1,121 @@
+CAPI=2:
+
+# Copyright 2023 EPFL
+# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+#
+# Author: Simone Machetti - simone.machetti@epfl.ch
+
+name: femu
+description: FEMU.
+
+filesets:
+  files_rtl_generic:
+    depend:
+    - x-heep::packages
+    - openhwgroup.org:ip:cv32e40p
+    - openhwgroup.org:ip:cv32e40x
+    - openhwgroup.org:ip:cve2
+    - pulp-platform.org:ip:fpnew
+    - pulp-platform.org:ip:gpio
+    - pulp-platform.org::common_cells
+    - pulp-platform.org::cluster_interconnect
+    - pulp-platform.org::riscv_dbg
+    - pulp-platform.org::register_interface
+    - openhwgroup.org:ip:soc_ctrl
+    - lowrisc:ip:uart:0.1
+    - lowrisc:ip:rv_plic_example:0.1
+    - lowrisc:ip:rv_timer:0.1
+    - lowrisc:ip:spi_host:1.0
+    - lowrisc:ip:i2c:0.1
+    - yosyshq:picorv32_spimemio:0-r1
+    - x-heep:obi_spimemio:0.1.0
+    - x-heep:ip:boot_rom
+    - x-heep:ip:dma
+    - x-heep:ip:power_manager
+    - x-heep:ip:fast_intr_ctrl
+    files:
+    - vendor/x_heep/hw/core-v-mini-mcu/core_v_mini_mcu.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/cpu_subsystem.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/memory_subsystem.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/system_bus.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/system_xbar.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/spi_subsystem.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/debug_subsystem.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/peripheral_subsystem.sv
+    - vendor/x_heep/hw/core-v-mini-mcu/ao_peripheral_subsystem.sv
+    file_type: systemVerilogSource
+
+  x_heep_system:
+    depend:
+    - x-heep::packages
+    - x-heep:ip:pad_control
+    files:
+    - vendor/x_heep/hw/system/x_heep_system.sv
+    - vendor/x_heep/hw/system/pad_ring.sv
+    file_type: systemVerilogSource
+
+  rtl-fpga:
+    files:
+    - vendor/x_heep/hw/fpga/xilinx_core_v_mini_mcu_wrapper.sv
+    - vendor/x_heep/hw/fpga/sram_wrapper.sv
+    file_type: systemVerilogSource
+
+  ip-fpga:
+    files:
+    - vendor/x_heep/hw/fpga/scripts/xilinx_generate_clk_wizard.tcl:  { file_type: tclSource }
+    - vendor/x_heep/hw/fpga/scripts/generate_sram.tcl:  { file_type: tclSource }
+    - vendor/x_heep/hw/fpga/prim_xilinx_clk.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/cv32e40p_xilinx_clock_gate.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/cv32e40x_xilinx_clock_gate.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/cve2_xilinx_clock_gate.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/pad_cell_input_xilinx.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/pad_cell_output_xilinx.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/pad_cell_inout_xilinx.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/pad_cell_bypass_input_xilinx.sv:  { file_type: systemVerilogSource }
+    - vendor/x_heep/hw/fpga/pad_cell_bypass_output_xilinx.sv:  { file_type: systemVerilogSource }
+
+  ip-femu:
+    depend:
+    - pulp-platform.org::axi_spi_slave
+    files:
+    - scripts/xilinx_generate_processing_system.tcl: {file_type: tclSource}
+    - rtl/axi_address_adder.v: {file_type: verilogSource}
+    - rtl/axi_address_fix_adder.v: {file_type: verilogSource}
+    - rtl/performance_counters.v: {file_type: verilogSource}
+    - rtl/femu.sv: {file_type: systemVerilogSource}
+    - pinout/pin_assign.xdc: {file_type: xdc}
+
+parameters:
+  PULP_XPULP:
+    datatype: int
+    paramtype: vlogparam
+    default: 0
+  SYNTHESIS:
+    datatype: bool
+    paramtype: vlogdefine
+    default: false
+
+targets:
+  default: &default_target
+    filesets:
+    - files_rtl_generic
+    toplevel: [core_v_mini_mcu]
+
+  femu:
+    <<: *default_target
+    default_tool: vivado
+    description: TUL Pynq-Z2 Board
+    filesets_append:
+    - x_heep_system
+    - rtl-fpga
+    - ip-fpga
+    - ip-femu
+    parameters:
+    - PULP_XPULP=0
+    - SYNTHESIS=true
+    tools:
+      vivado:
+        part: xc7z020clg400-1
+        jobs: 4
+    toplevel: [femu]

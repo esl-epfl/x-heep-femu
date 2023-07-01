@@ -1,0 +1,763 @@
+/*
+* Copyright 2023 EPFL
+* Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+*
+* Author: Simone Machetti - simone.machetti@epfl.ch
+*/
+
+module femu
+  import obi_pkg::*;
+  import reg_pkg::*;
+#(
+) (
+  inout logic clk_in,
+  inout logic rst_i,
+
+  output logic rst_led,
+
+  inout logic [31:2] gpio_io,
+
+  inout logic spi2_sck_io,
+  inout logic spi2_cs_0_io,
+  inout logic spi2_cs_1_io,
+  inout logic spi2_sd_0_io,
+  inout logic spi2_sd_1_io,
+  inout logic spi2_sd_2_io,
+  inout logic spi2_sd_3_io,
+
+  inout logic i2c_scl_io,
+  inout logic i2c_sda_io,
+
+  inout wire [14:0] DDR_addr,
+  inout wire [2:0] DDR_ba,
+  inout wire DDR_cas_n,
+  inout wire DDR_ck_n,
+  inout wire DDR_ck_p,
+  inout wire DDR_cke,
+  inout wire DDR_cs_n,
+  inout wire [3:0] DDR_dm,
+  inout wire [31:0] DDR_dq,
+  inout wire [3:0] DDR_dqs_n,
+  inout wire [3:0] DDR_dqs_p,
+  inout wire DDR_odt,
+  inout wire DDR_ras_n,
+  inout wire DDR_reset_n,
+  inout wire DDR_we_n,
+  inout wire FIXED_IO_ddr_vrn,
+  inout wire FIXED_IO_ddr_vrp,
+  inout wire [53:0] FIXED_IO_mio,
+  inout wire FIXED_IO_ps_clk,
+  inout wire FIXED_IO_ps_porb,
+  inout wire FIXED_IO_ps_srstb
+);
+
+  import core_v_mini_mcu_pkg::*;
+
+  localparam AXI_ADDR_WIDTH = 32;
+  localparam AXI_DATA_WIDTH = 32;
+
+  // PM signals
+  logic cpu_subsystem_powergate_switch;
+  logic cpu_subsystem_powergate_switch_ack;
+  logic cpu_subsystem_sleep;
+  logic cpu_subsystem_powergate_iso;
+  logic cpu_subsystem_rst_n;
+  logic peripheral_subsystem_powergate_switch;
+  logic peripheral_subsystem_powergate_switch_ack;
+  logic peripheral_subsystem_powergate_iso;
+  logic peripheral_subsystem_clkgate_en;
+  logic peripheral_subsystem_rst_n;
+  logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_powergate_switch;
+  logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_powergate_switch_ack;
+  logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_powergate_iso;
+  logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_set_retentive;
+  logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_clkgate_en;
+
+  // PS SIDE PORTS
+  logic AXI_ACLK;
+  logic AXI_ARSTN;
+
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_FLASH_araddr_sig;
+  logic [1:0] AXI_M_FLASH_arburst_sig;
+  logic [3:0] AXI_M_FLASH_arcache_sig;
+  logic [1:0] AXI_M_FLASH_arid_sig;
+  logic [7:0] AXI_M_FLASH_arlen_sig;
+  logic [0:0] AXI_M_FLASH_arlock_sig;
+  logic [2:0] AXI_M_FLASH_arprot_sig;
+  logic [3:0] AXI_M_FLASH_arqos_sig;
+  logic AXI_M_FLASH_arready_sig;
+  logic [3:0] AXI_M_FLASH_arregion;
+  logic [2:0] AXI_M_FLASH_arsize_sig;
+  logic AXI_M_FLASH_arvalid_sig;
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_FLASH_awaddr_sig;
+  logic [1:0] AXI_M_FLASH_awburst_sig;
+  logic [3:0] AXI_M_FLASH_awcache_sig;
+  logic [1:0] AXI_M_FLASH_awid_sig;
+  logic [7:0] AXI_M_FLASH_awlen_sig;
+  logic [0:0] AXI_M_FLASH_awlock_sig;
+  logic [2:0] AXI_M_FLASH_awprot_sig;
+  logic [3:0] AXI_M_FLASH_awqos_sig;
+  logic AXI_M_FLASH_awready_sig;
+  logic [3:0] AXI_M_FLASH_awregion;
+  logic [2:0] AXI_M_FLASH_awsize_sig;
+  logic AXI_M_FLASH_awvalid_sig;
+  logic [1:0] AXI_M_FLASH_bid_sig;
+  logic AXI_M_FLASH_bready_sig;
+  logic [1:0] AXI_M_FLASH_bresp_sig;
+  logic AXI_M_FLASH_bvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_FLASH_rdata_sig;
+  logic [1:0] AXI_M_FLASH_rid_sig;
+  logic AXI_M_FLASH_rlast_sig;
+  logic AXI_M_FLASH_rready_sig;
+  logic [1:0] AXI_M_FLASH_rresp_sig;
+  logic AXI_M_FLASH_rvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_FLASH_wdata_sig;
+  logic AXI_M_FLASH_wlast_sig;
+  logic AXI_M_FLASH_wready_sig;
+  logic [3:0] AXI_M_FLASH_wstrb_sig;
+  logic AXI_M_FLASH_wvalid_sig;
+
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_ADC_araddr_sig;
+  logic [1:0] AXI_M_ADC_arburst_sig;
+  logic [3:0] AXI_M_ADC_arcache_sig;
+  logic [1:0] AXI_M_ADC_arid_sig;
+  logic [7:0] AXI_M_ADC_arlen_sig;
+  logic [0:0] AXI_M_ADC_arlock_sig;
+  logic [2:0] AXI_M_ADC_arprot_sig;
+  logic [3:0] AXI_M_ADC_arqos_sig;
+  logic AXI_M_ADC_arready_sig;
+  logic [3:0] AXI_M_ADC_arregion;
+  logic [2:0] AXI_M_ADC_arsize_sig;
+  logic AXI_M_ADC_arvalid_sig;
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_ADC_awaddr_sig;
+  logic [1:0] AXI_M_ADC_awburst_sig;
+  logic [3:0] AXI_M_ADC_awcache_sig;
+  logic [1:0] AXI_M_ADC_awid_sig;
+  logic [7:0] AXI_M_ADC_awlen_sig;
+  logic [0:0] AXI_M_ADC_awlock_sig;
+  logic [2:0] AXI_M_ADC_awprot_sig;
+  logic [3:0] AXI_M_ADC_awqos_sig;
+  logic AXI_M_ADC_awready_sig;
+  logic [3:0] AXI_M_ADC_awregion;
+  logic [2:0] AXI_M_ADC_awsize_sig;
+  logic AXI_M_ADC_awvalid_sig;
+  logic [1:0] AXI_M_ADC_bid_sig;
+  logic AXI_M_ADC_bready_sig;
+  logic [1:0] AXI_M_ADC_bresp_sig;
+  logic AXI_M_ADC_bvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_ADC_rdata_sig;
+  logic [1:0] AXI_M_ADC_rid_sig;
+  logic AXI_M_ADC_rlast_sig;
+  logic AXI_M_ADC_rready_sig;
+  logic [1:0] AXI_M_ADC_rresp_sig;
+  logic AXI_M_ADC_rvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_ADC_wdata_sig;
+  logic AXI_M_ADC_wlast_sig;
+  logic AXI_M_ADC_wready_sig;
+  logic [3:0] AXI_M_ADC_wstrb_sig;
+  logic AXI_M_ADC_wvalid_sig;
+
+  logic spi_test_clk_sig;
+  logic spi_test_cs_sig;
+  logic [3:0] spi_test_data_sig;
+
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_FLASH_awaddr_in_sig;
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_FLASH_araddr_in_sig;
+
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_ADC_awaddr_in_sig;
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_ADC_araddr_in_sig;
+
+  logic [3 : 0] AXI_S_FLASH_awaddr_sig;
+  logic [2:0] AXI_S_FLASH_awprot_sig;
+  logic AXI_S_FLASH_awready_sig;
+  logic AXI_S_FLASH_awvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_FLASH_wdata_sig;
+  logic AXI_S_FLASH_wready_sig;
+  logic [(AXI_DATA_WIDTH / 8)-1 : 0] AXI_S_FLASH_wstrb_sig;
+  logic AXI_S_FLASH_wvalid_sig;
+  logic AXI_S_FLASH_bready_sig;
+  logic [1:0] AXI_S_FLASH_bresp_sig;
+  logic AXI_S_FLASH_bvalid_sig;
+  logic [3 : 0] AXI_S_FLASH_araddr_sig;
+  logic [2 : 0] AXI_S_FLASH_arprot_sig;
+  logic AXI_S_FLASH_arready_sig;
+  logic AXI_S_FLASH_arvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_FLASH_rdata_sig;
+  logic AXI_S_FLASH_rready_sig;
+  logic [1:0] AXI_S_FLASH_rresp_sig;
+  logic AXI_S_FLASH_rvalid_sig;
+
+  logic [7 : 0] AXI_S_PERF_CNT_awaddr_sig;
+  logic [2:0] AXI_S_PERF_CNT_awprot_sig;
+  logic AXI_S_PERF_CNT_awready_sig;
+  logic AXI_S_PERF_CNT_awvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_PERF_CNT_wdata_sig;
+  logic AXI_S_PERF_CNT_wready_sig;
+  logic [(AXI_DATA_WIDTH / 8)-1 : 0] AXI_S_PERF_CNT_wstrb_sig;
+  logic AXI_S_PERF_CNT_wvalid_sig;
+  logic AXI_S_PERF_CNT_bready_sig;
+  logic [1:0] AXI_S_PERF_CNT_bresp_sig;
+  logic AXI_S_PERF_CNT_bvalid_sig;
+  logic [7 : 0] AXI_S_PERF_CNT_araddr_sig;
+  logic [2 : 0] AXI_S_PERF_CNT_arprot_sig;
+  logic AXI_S_PERF_CNT_arready_sig;
+  logic AXI_S_PERF_CNT_arvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_PERF_CNT_rdata_sig;
+  logic AXI_S_PERF_CNT_rready_sig;
+  logic [1:0] AXI_S_PERF_CNT_rresp_sig;
+  logic AXI_S_PERF_CNT_rvalid_sig;
+
+  // PAD controller
+  reg_req_t pad_req;
+  reg_rsp_t pad_resp;
+  logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
+  logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
+
+  logic rst_ngen;
+
+  // input, output pins from core_v_mini_mcu
+% for pad in total_pad_list:
+${pad.internal_signals}
+% endfor
+
+  wire         clk_gen;
+  logic [31:0] exit_value;
+  wire         rst_n;
+
+  // low active reset
+  assign rst_n   = !rst_i;
+
+  // reset LED for debugging
+  assign rst_led = rst_n;
+
+  assign execute_from_flash_in_x = 1'b0;
+  assign boot_select_in_x = 1'b0;
+
+  xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
+    .clk_125MHz(clk_in),
+    .clk_out1_0(clk_gen)
+  );
+
+  // eXtension Interface
+  if_xif #() ext_if ();
+
+  logic clk_i;
+  assign clk_i = clk_gen;
+
+  core_v_mini_mcu #(
+  ) core_v_mini_mcu_i (
+
+    .rst_ni(rst_ngen),
+% for pad in pad_list:
+${pad.core_v_mini_mcu_bonding}
+% endfor
+    .intr_vector_ext_i('0),
+    .xif_compressed_if(ext_if),
+    .xif_issue_if(ext_if),
+    .xif_commit_if(ext_if),
+    .xif_mem_if(ext_if),
+    .xif_mem_result_if(ext_if),
+    .xif_result_if(ext_if),
+    .ext_xbar_master_req_i('0),
+    .ext_xbar_master_resp_o(),
+    .ext_xbar_slave_req_o(),
+    .ext_xbar_slave_resp_i('0),
+    .ext_peripheral_slave_req_o(),
+    .ext_peripheral_slave_resp_i('0),
+    .external_subsystem_powergate_switch_o(),
+    .external_subsystem_powergate_switch_ack_i(),
+    .external_subsystem_powergate_iso_o(),
+    .external_subsystem_rst_no(),
+    .external_ram_banks_set_retentive_o(),
+    .exit_value_o(exit_value),
+    .pad_req_o(pad_req),
+    .pad_resp_i(pad_resp),
+    .cpu_subsystem_powergate_switch_o(cpu_subsystem_powergate_switch),
+    .cpu_subsystem_powergate_switch_ack_i(cpu_subsystem_powergate_switch_ack),
+    .cpu_subsystem_sleep_o(cpu_subsystem_sleep),
+    .peripheral_subsystem_powergate_switch_o(peripheral_subsystem_powergate_switch),
+    .peripheral_subsystem_powergate_switch_ack_i(peripheral_subsystem_powergate_switch_ack),
+    .peripheral_subsystem_clkgate_en_o(peripheral_subsystem_clkgate_en),
+    .memory_subsystem_banks_powergate_switch_o(memory_subsystem_banks_powergate_switch),
+    .memory_subsystem_banks_powergate_switch_ack_i(memory_subsystem_banks_powergate_switch_ack),
+    .memory_subsystem_banks_set_retentive_o(memory_subsystem_banks_set_retentive),
+    .memory_subsystem_clkgate_en_o(memory_subsystem_clkgate_en)
+  );
+
+  logic gpio_2_io;
+  logic gpio_3_io;
+  logic gpio_4_io;
+  logic gpio_5_io;
+  logic gpio_6_io;
+  logic gpio_7_io;
+  logic gpio_8_io;
+  logic gpio_9_io;
+  logic gpio_10_io;
+  logic gpio_11_io;
+  logic gpio_12_io;
+  logic gpio_13_io;
+  logic gpio_14_io;
+  logic gpio_15_io;
+  logic gpio_16_io;
+  logic gpio_17_io;
+  logic gpio_18_io;
+  logic gpio_19_io;
+  logic gpio_20_io;
+  logic gpio_21_io;
+  logic gpio_22_io;
+  logic gpio_23_io;
+  logic gpio_24_io;
+  logic gpio_25_io;
+  logic gpio_26_io;
+  logic gpio_27_io;
+  logic gpio_28_io;
+  logic gpio_29_io;
+  logic gpio_30_io;
+  logic gpio_31_io;
+
+  assign gpio_io[2] = gpio_2_io;
+  assign gpio_io[3] = gpio_3_io;
+  assign gpio_io[4] = gpio_4_io;
+  assign gpio_io[5] = gpio_5_io;
+  assign gpio_io[6] = gpio_6_io;
+  assign gpio_io[7] = gpio_7_io;
+  assign gpio_io[8] = gpio_8_io;
+  assign gpio_io[9] = gpio_9_io;
+  assign gpio_io[10] = gpio_10_io;
+  assign gpio_io[11] = gpio_11_io;
+  assign gpio_io[12] = gpio_12_io;
+  assign gpio_io[13] = gpio_13_io;
+  assign gpio_io[14] = gpio_14_io;
+  assign gpio_io[15] = gpio_15_io;
+  assign gpio_io[16] = gpio_16_io;
+  assign gpio_io[17] = gpio_17_io;
+  assign gpio_io[18] = gpio_18_io;
+  assign gpio_io[19] = gpio_19_io;
+  assign gpio_io[20] = gpio_20_io;
+  assign gpio_io[21] = gpio_21_io;
+  assign gpio_io[22] = gpio_22_io;
+  assign gpio_io[23] = gpio_23_io;
+  assign gpio_io[24] = gpio_24_io;
+  assign gpio_io[25] = gpio_25_io;
+  assign gpio_io[26] = gpio_26_io;
+  assign gpio_io[27] = gpio_27_io;
+  assign gpio_io[28] = gpio_28_io;
+  assign gpio_io[29] = gpio_29_io;
+  assign gpio_io[30] = gpio_30_io;
+  assign gpio_io[31] = gpio_31_io;
+
+  processing_system_wrapper processing_system_wrapper_i (
+    .DDR_addr(DDR_addr),
+    .DDR_ba(DDR_ba),
+    .DDR_cas_n(DDR_cas_n),
+    .DDR_ck_n(DDR_ck_n),
+    .DDR_ck_p(DDR_ck_p),
+    .DDR_cke(DDR_cke),
+    .DDR_cs_n(DDR_cs_n),
+    .DDR_dm(DDR_dm),
+    .DDR_dq(DDR_dq),
+    .DDR_dqs_n(DDR_dqs_n),
+    .DDR_dqs_p(DDR_dqs_p),
+    .DDR_odt(DDR_odt),
+    .DDR_ras_n(DDR_ras_n),
+    .DDR_reset_n(DDR_reset_n),
+    .DDR_we_n(DDR_we_n),
+    .FIXED_IO_ddr_vrn(FIXED_IO_ddr_vrn),
+    .FIXED_IO_ddr_vrp(FIXED_IO_ddr_vrp),
+    .FIXED_IO_mio(FIXED_IO_mio),
+    .FIXED_IO_ps_clk(FIXED_IO_ps_clk),
+    .FIXED_IO_ps_porb(FIXED_IO_ps_porb),
+    .FIXED_IO_ps_srstb(FIXED_IO_ps_srstb),
+    .UART_rxd(uart_tx_out_x),
+    .UART_txd(uart_rx_in_x),
+    .gpio_jtag_tck_i(jtag_tck_in_x),
+    .gpio_jtag_tms_i(jtag_tms_in_x),
+    .gpio_jtag_trst_ni(jtag_trst_nin_x),
+    .gpio_jtag_tdi_i(jtag_tdi_in_x),
+    .gpio_jtag_tdo_o(jtag_tdo_out_x),
+
+    .AXI_ACLK(AXI_ACLK),
+    .AXI_ARSTN(AXI_ARSTN),
+
+    .AXI_M_FLASH_araddr(AXI_M_FLASH_araddr_sig),
+    .AXI_M_FLASH_arburst(AXI_M_FLASH_arburst_sig),
+    .AXI_M_FLASH_arcache(AXI_M_FLASH_arcache_sig),
+    .AXI_M_FLASH_arid(AXI_M_FLASH_arid_sig),
+    .AXI_M_FLASH_arlen(AXI_M_FLASH_arlen_sig),
+    .AXI_M_FLASH_arlock(AXI_M_FLASH_arlock_sig),
+    .AXI_M_FLASH_arprot(AXI_M_FLASH_arprot_sig),
+    .AXI_M_FLASH_arqos(AXI_M_FLASH_arqos_sig),
+    .AXI_M_FLASH_arready(AXI_M_FLASH_arready_sig),
+    .AXI_M_FLASH_arregion(AXI_M_FLASH_arregion_sig),
+    .AXI_M_FLASH_arsize(AXI_M_FLASH_arsize_sig),
+    .AXI_M_FLASH_arvalid(AXI_M_FLASH_arvalid_sig),
+    .AXI_M_FLASH_awaddr(AXI_M_FLASH_awaddr_sig),
+    .AXI_M_FLASH_awburst(AXI_M_FLASH_awburst_sig),
+    .AXI_M_FLASH_awcache(AXI_M_FLASH_awcache_sig),
+    .AXI_M_FLASH_awid(AXI_M_FLASH_awid_sig),
+    .AXI_M_FLASH_awlen(AXI_M_FLASH_awlen_sig),
+    .AXI_M_FLASH_awlock(AXI_M_FLASH_awlock_sig),
+    .AXI_M_FLASH_awprot(AXI_M_FLASH_awprot_sig),
+    .AXI_M_FLASH_awqos(AXI_M_FLASH_awqos_sig),
+    .AXI_M_FLASH_awready(AXI_M_FLASH_awready_sig),
+    .AXI_M_FLASH_awregion(AXI_M_FLASH_awregion_sig),
+    .AXI_M_FLASH_awsize(AXI_M_FLASH_awsize_sig),
+    .AXI_M_FLASH_awvalid(AXI_M_FLASH_awvalid_sig),
+    .AXI_M_FLASH_bid(AXI_M_FLASH_bid_sig),
+    .AXI_M_FLASH_bready(AXI_M_FLASH_bready_sig),
+    .AXI_M_FLASH_bresp(AXI_M_FLASH_bresp_sig),
+    .AXI_M_FLASH_bvalid(AXI_M_FLASH_bvalid_sig),
+    .AXI_M_FLASH_rdata(AXI_M_FLASH_rdata_sig),
+    .AXI_M_FLASH_rid(AXI_M_FLASH_rid_sig),
+    .AXI_M_FLASH_rlast(AXI_M_FLASH_rlast_sig),
+    .AXI_M_FLASH_rready(AXI_M_FLASH_rready_sig),
+    .AXI_M_FLASH_rresp(AXI_M_FLASH_rresp_sig),
+    .AXI_M_FLASH_rvalid(AXI_M_FLASH_rvalid_sig),
+    .AXI_M_FLASH_wdata(AXI_M_FLASH_wdata_sig),
+    .AXI_M_FLASH_wlast(AXI_M_FLASH_wlast_sig),
+    .AXI_M_FLASH_wready(AXI_M_FLASH_wready_sig),
+    .AXI_M_FLASH_wstrb(AXI_M_FLASH_wstrb_sig),
+    .AXI_M_FLASH_wvalid(AXI_M_FLASH_wvalid_sig),
+
+    .AXI_M_ADC_araddr(AXI_M_ADC_araddr_sig),
+    .AXI_M_ADC_arburst(AXI_M_ADC_arburst_sig),
+    .AXI_M_ADC_arcache(AXI_M_ADC_arcache_sig),
+    .AXI_M_ADC_arid(AXI_M_ADC_arid_sig),
+    .AXI_M_ADC_arlen(AXI_M_ADC_arlen_sig),
+    .AXI_M_ADC_arlock(AXI_M_ADC_arlock_sig),
+    .AXI_M_ADC_arprot(AXI_M_ADC_arprot_sig),
+    .AXI_M_ADC_arqos(AXI_M_ADC_arqos_sig),
+    .AXI_M_ADC_arready(AXI_M_ADC_arready_sig),
+    .AXI_M_ADC_arregion(AXI_M_ADC_arregion_sig),
+    .AXI_M_ADC_arsize(AXI_M_ADC_arsize_sig),
+    .AXI_M_ADC_arvalid(AXI_M_ADC_arvalid_sig),
+    .AXI_M_ADC_awaddr(AXI_M_ADC_awaddr_sig),
+    .AXI_M_ADC_awburst(AXI_M_ADC_awburst_sig),
+    .AXI_M_ADC_awcache(AXI_M_ADC_awcache_sig),
+    .AXI_M_ADC_awid(AXI_M_ADC_awid_sig),
+    .AXI_M_ADC_awlen(AXI_M_ADC_awlen_sig),
+    .AXI_M_ADC_awlock(AXI_M_ADC_awlock_sig),
+    .AXI_M_ADC_awprot(AXI_M_ADC_awprot_sig),
+    .AXI_M_ADC_awqos(AXI_M_ADC_awqos_sig),
+    .AXI_M_ADC_awready(AXI_M_ADC_awready_sig),
+    .AXI_M_ADC_awregion(AXI_M_ADC_awregion_sig),
+    .AXI_M_ADC_awsize(AXI_M_ADC_awsize_sig),
+    .AXI_M_ADC_awvalid(AXI_M_ADC_awvalid_sig),
+    .AXI_M_ADC_bid(AXI_M_ADC_bid_sig),
+    .AXI_M_ADC_bready(AXI_M_ADC_bready_sig),
+    .AXI_M_ADC_bresp(AXI_M_ADC_bresp_sig),
+    .AXI_M_ADC_bvalid(AXI_M_ADC_bvalid_sig),
+    .AXI_M_ADC_rdata(AXI_M_ADC_rdata_sig),
+    .AXI_M_ADC_rid(AXI_M_ADC_rid_sig),
+    .AXI_M_ADC_rlast(AXI_M_ADC_rlast_sig),
+    .AXI_M_ADC_rready(AXI_M_ADC_rready_sig),
+    .AXI_M_ADC_rresp(AXI_M_ADC_rresp_sig),
+    .AXI_M_ADC_rvalid(AXI_M_ADC_rvalid_sig),
+    .AXI_M_ADC_wdata(AXI_M_ADC_wdata_sig),
+    .AXI_M_ADC_wlast(AXI_M_ADC_wlast_sig),
+    .AXI_M_ADC_wready(AXI_M_ADC_wready_sig),
+    .AXI_M_ADC_wstrb(AXI_M_ADC_wstrb_sig),
+    .AXI_M_ADC_wvalid(AXI_M_ADC_wvalid_sig),
+
+    .AXI_S_FLASH_araddr(AXI_S_FLASH_araddr_sig),
+    .AXI_S_FLASH_arprot(AXI_S_FLASH_arprot_sig),
+    .AXI_S_FLASH_arready(AXI_S_FLASH_arready_sig),
+    .AXI_S_FLASH_arvalid(AXI_S_FLASH_arvalid_sig),
+    .AXI_S_FLASH_awaddr(AXI_S_FLASH_awaddr_sig),
+    .AXI_S_FLASH_awprot(AXI_S_FLASH_awprot_sig),
+    .AXI_S_FLASH_awready(AXI_S_FLASH_awready_sig),
+    .AXI_S_FLASH_awvalid(AXI_S_FLASH_awvalid_sig),
+    .AXI_S_FLASH_bready(AXI_S_FLASH_bready_sig),
+    .AXI_S_FLASH_bresp(AXI_S_FLASH_bresp_sig),
+    .AXI_S_FLASH_bvalid(AXI_S_FLASH_bvalid_sig),
+    .AXI_S_FLASH_rdata(AXI_S_FLASH_rdata_sig),
+    .AXI_S_FLASH_rready(AXI_S_FLASH_rready_sig),
+    .AXI_S_FLASH_rresp(AXI_S_FLASH_rresp_sig),
+    .AXI_S_FLASH_rvalid(AXI_S_FLASH_rvalid_sig),
+    .AXI_S_FLASH_wdata(AXI_S_FLASH_wdata_sig),
+    .AXI_S_FLASH_wready(AXI_S_FLASH_wready_sig),
+    .AXI_S_FLASH_wstrb(AXI_S_FLASH_wstrb_sig),
+    .AXI_S_FLASH_wvalid(AXI_S_FLASH_wvalid_sig),
+
+    .AXI_S_PERF_CNT_araddr(AXI_S_PERF_CNT_araddr_sig),
+    .AXI_S_PERF_CNT_arprot(AXI_S_PERF_CNT_arprot_sig),
+    .AXI_S_PERF_CNT_arready(AXI_S_PERF_CNT_arready_sig),
+    .AXI_S_PERF_CNT_arvalid(AXI_S_PERF_CNT_arvalid_sig),
+    .AXI_S_PERF_CNT_awaddr(AXI_S_PERF_CNT_awaddr_sig),
+    .AXI_S_PERF_CNT_awprot(AXI_S_PERF_CNT_awprot_sig),
+    .AXI_S_PERF_CNT_awready(AXI_S_PERF_CNT_awready_sig),
+    .AXI_S_PERF_CNT_awvalid(AXI_S_PERF_CNT_awvalid_sig),
+    .AXI_S_PERF_CNT_bready(AXI_S_PERF_CNT_bready_sig),
+    .AXI_S_PERF_CNT_bresp(AXI_S_PERF_CNT_bresp_sig),
+    .AXI_S_PERF_CNT_bvalid(AXI_S_PERF_CNT_bvalid_sig),
+    .AXI_S_PERF_CNT_rdata(AXI_S_PERF_CNT_rdata_sig),
+    .AXI_S_PERF_CNT_rready(AXI_S_PERF_CNT_rready_sig),
+    .AXI_S_PERF_CNT_rresp(AXI_S_PERF_CNT_rresp_sig),
+    .AXI_S_PERF_CNT_rvalid(AXI_S_PERF_CNT_rvalid_sig),
+    .AXI_S_PERF_CNT_wdata(AXI_S_PERF_CNT_wdata_sig),
+    .AXI_S_PERF_CNT_wready(AXI_S_PERF_CNT_wready_sig),
+    .AXI_S_PERF_CNT_wstrb(AXI_S_PERF_CNT_wstrb_sig),
+    .AXI_S_PERF_CNT_wvalid(AXI_S_PERF_CNT_wvalid_sig)
+  );
+
+  performance_counters #(
+    .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
+    .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) performance_counters_i (
+    .S_AXI_ACLK(AXI_ACLK),
+    .S_AXI_ARESETN(AXI_ARSTN),
+
+    .S_AXI_AWADDR (AXI_S_PERF_CNT_awaddr_sig),
+    .S_AXI_AWPROT (AXI_S_PERF_CNT_awprot_sig),
+    .S_AXI_AWVALID(AXI_S_PERF_CNT_awvalid_sig),
+    .S_AXI_AWREADY(AXI_S_PERF_CNT_awready_sig),
+    .S_AXI_WDATA  (AXI_S_PERF_CNT_wdata_sig),
+    .S_AXI_WSTRB  (AXI_S_PERF_CNT_wstrb_sig),
+    .S_AXI_WVALID (AXI_S_PERF_CNT_wvalid_sig),
+    .S_AXI_WREADY (AXI_S_PERF_CNT_wready_sig),
+    .S_AXI_BRESP  (AXI_S_PERF_CNT_bresp_sig),
+    .S_AXI_BVALID (AXI_S_PERF_CNT_bvalid_sig),
+    .S_AXI_BREADY (AXI_S_PERF_CNT_bready_sig),
+    .S_AXI_ARADDR (AXI_S_PERF_CNT_araddr_sig),
+    .S_AXI_ARPROT (AXI_S_PERF_CNT_arprot_sig),
+    .S_AXI_ARVALID(AXI_S_PERF_CNT_arvalid_sig),
+    .S_AXI_ARREADY(AXI_S_PERF_CNT_arready_sig),
+    .S_AXI_RDATA  (AXI_S_PERF_CNT_rdata_sig),
+    .S_AXI_RRESP  (AXI_S_PERF_CNT_rresp_sig),
+    .S_AXI_RVALID (AXI_S_PERF_CNT_rvalid_sig),
+    .S_AXI_RREADY (AXI_S_PERF_CNT_rready_sig),
+
+    .start_automatic_i(gpio_0_out_x),
+    .start_manual_i(gpio_1_out_x),
+    .cpu_clock_gate_i(cpu_subsystem_sleep),
+    .cpu_power_gate_i(~cpu_subsystem_powergate_switch),
+    .bus_ao_clock_gate_i(1'b0),
+    .debug_ao_clock_gate_i(1'b0),
+    .soc_ctrl_ao_clock_gate_i(1'b0),
+    .boot_rom_ao_clock_gate_i(1'b0),
+    .spi_flash_ao_clock_gate_i(1'b0),
+    .spi_ao_clock_gate_i(1'b0),
+    .power_manager_ao_clock_gate_i(1'b0),
+    .timer_ao_clock_gate_i(1'b0),
+    .dma_ao_clock_gate_i(1'b0),
+    .fast_int_ctrl_ao_clock_gate_i(1'b0),
+    .gpio_ao_clock_gate_i(1'b0),
+    .uart_ao_clock_gate_i(1'b0),
+    .plic_clock_gate_i(peripheral_subsystem_clkgate_en),
+    .plic_power_gate_i(~peripheral_subsystem_powergate_switch),
+    .gpio_clock_gate_i(peripheral_subsystem_clkgate_en),
+    .gpio_power_gate_i(~peripheral_subsystem_powergate_switch),
+    .i2c_clock_gate_i(peripheral_subsystem_clkgate_en),
+    .i2c_power_gate_i(~peripheral_subsystem_powergate_switch),
+    .timer_clock_gate_i(peripheral_subsystem_clkgate_en),
+    .timer_power_gate_i(~peripheral_subsystem_powergate_switch),
+    .spi_clock_gate_i(peripheral_subsystem_clkgate_en),
+    .spi_power_gate_i(~peripheral_subsystem_powergate_switch),
+    .ram_bank_0_clock_gate_i(memory_subsystem_clkgate_en[0]),
+    .ram_bank_0_power_gate_i(~memory_subsystem_banks_powergate_switch[0]),
+    .ram_bank_0_retentive_i(~memory_subsystem_banks_set_retentive[0]),
+    .ram_bank_1_clock_gate_i(memory_subsystem_clkgate_en[0]),
+    .ram_bank_1_power_gate_i(~memory_subsystem_banks_powergate_switch[1]),
+    .ram_bank_1_retentive_i(~memory_subsystem_banks_set_retentive[1]),
+    .ram_bank_2_clock_gate_i(memory_subsystem_clkgate_en[0]),
+    .ram_bank_2_power_gate_i(~memory_subsystem_banks_powergate_switch[2]),
+    .ram_bank_2_retentive_i(~memory_subsystem_banks_set_retentive[2]),
+    .ram_bank_3_clock_gate_i(memory_subsystem_clkgate_en[0]),
+    .ram_bank_3_power_gate_i(~memory_subsystem_banks_powergate_switch[3]),
+    .ram_bank_3_retentive_i(~memory_subsystem_banks_set_retentive[3])
+  );
+
+  axi_address_adder #(
+    .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
+    .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) axi_address_adder_virtual_flash_i (
+    .axi_master_awaddr_in(AXI_M_FLASH_awaddr_in_sig),
+    .axi_master_araddr_in(AXI_M_FLASH_araddr_in_sig),
+
+    .axi_master_araddr_out(AXI_M_FLASH_araddr_sig),
+    .axi_master_awaddr_out(AXI_M_FLASH_awaddr_sig),
+
+    .S_AXI_ACLK(AXI_ACLK),
+    .S_AXI_ARESETN(AXI_ARSTN),
+
+    .S_AXI_AWADDR (AXI_S_FLASH_awaddr_sig),
+    .S_AXI_AWPROT (AXI_S_FLASH_awprot_sig),
+    .S_AXI_AWVALID(AXI_S_FLASH_awvalid_sig),
+    .S_AXI_AWREADY(AXI_S_FLASH_awready_sig),
+    .S_AXI_WDATA  (AXI_S_FLASH_wdata_sig),
+    .S_AXI_WSTRB  (AXI_S_FLASH_wstrb_sig),
+    .S_AXI_WVALID (AXI_S_FLASH_wvalid_sig),
+    .S_AXI_WREADY (AXI_S_FLASH_wready_sig),
+    .S_AXI_BRESP  (AXI_S_FLASH_bresp_sig),
+    .S_AXI_BVALID (AXI_S_FLASH_bvalid_sig),
+    .S_AXI_BREADY (AXI_S_FLASH_bready_sig),
+    .S_AXI_ARADDR (AXI_S_FLASH_araddr_sig),
+    .S_AXI_ARPROT (AXI_S_FLASH_arprot_sig),
+    .S_AXI_ARVALID(AXI_S_FLASH_arvalid_sig),
+    .S_AXI_ARREADY(AXI_S_FLASH_arready_sig),
+    .S_AXI_RDATA  (AXI_S_FLASH_rdata_sig),
+    .S_AXI_RRESP  (AXI_S_FLASH_rresp_sig),
+    .S_AXI_RVALID (AXI_S_FLASH_rvalid_sig),
+    .S_AXI_RREADY (AXI_S_FLASH_rready_sig)
+  );
+
+  axi_spi_slave #(
+    .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) spi2axi_bridge_virtual_flash_i (
+    .axi_aclk(AXI_ACLK),
+    .axi_aresetn(AXI_ARSTN),
+
+    .test_mode('0),
+
+    .axi_master_aw_valid(AXI_M_FLASH_awvalid_sig),
+    .axi_master_aw_id(AXI_M_FLASH_awid_sig),
+    .axi_master_aw_prot(AXI_M_FLASH_awprot_sig),
+    .axi_master_aw_qos(AXI_M_FLASH_awqos_sig),
+    .axi_master_aw_cache(AXI_M_FLASH_awcache_sig),
+    .axi_master_aw_lock(AXI_M_FLASH_awlock_sig),
+    .axi_master_aw_burst(AXI_M_FLASH_awburst_sig),
+    .axi_master_aw_size(AXI_M_FLASH_awsize_sig),
+    .axi_master_aw_len(AXI_M_FLASH_awlen_sig),
+    .axi_master_aw_addr(AXI_M_FLASH_awaddr_in_sig),
+    .axi_master_aw_ready(AXI_M_FLASH_awready_sig),
+
+    .axi_master_w_valid(AXI_M_FLASH_wvalid_sig),
+    .axi_master_w_data (AXI_M_FLASH_wdata_sig),
+    .axi_master_w_strb (AXI_M_FLASH_wstrb_sig),
+    .axi_master_w_last (AXI_M_FLASH_wlast_sig),
+    .axi_master_w_ready(AXI_M_FLASH_wready_sig),
+
+    .axi_master_b_valid(AXI_M_FLASH_bvalid_sig),
+    .axi_master_b_id(AXI_M_FLASH_bid_sig),
+    .axi_master_b_resp(AXI_M_FLASH_bresp_sig),
+    .axi_master_b_ready(AXI_M_FLASH_bready_sig),
+
+    .axi_master_ar_valid(AXI_M_FLASH_arvalid_sig),
+    .axi_master_ar_id(AXI_M_FLASH_arid_sig),
+    .axi_master_ar_prot(AXI_M_FLASH_arprot_sig),
+    .axi_master_ar_qos(AXI_M_FLASH_arqos_sig),
+    .axi_master_ar_cache(AXI_M_FLASH_arcache_sig),
+    .axi_master_ar_lock(AXI_M_FLASH_arlock_sig),
+    .axi_master_ar_burst(AXI_M_FLASH_arburst_sig),
+    .axi_master_ar_size(AXI_M_FLASH_arsize_sig),
+    .axi_master_ar_len(AXI_M_FLASH_arlen_sig),
+    .axi_master_ar_addr(AXI_M_FLASH_araddr_in_sig),
+    .axi_master_ar_ready(AXI_M_FLASH_arready_sig),
+
+    .axi_master_r_valid(AXI_M_FLASH_rvalid_sig),
+    .axi_master_r_id(AXI_M_FLASH_rid_sig),
+    .axi_master_r_data(AXI_M_FLASH_rdata_sig),
+    .axi_master_r_resp(AXI_M_FLASH_rresp_sig),
+    .axi_master_r_last(AXI_M_FLASH_rlast_sig),
+    .axi_master_r_ready(AXI_M_FLASH_rready_sig),
+
+    .spi_sclk(spi_flash_sck_out_x),
+    .spi_cs  (spi_flash_cs_0_out_x),
+    .spi_sdo1(spi_flash_sd_1_in_x),
+    .spi_sdi0(spi_flash_sd_0_out_x),
+    .spi_sdi2(spi_flash_sd_2_out_x),
+    .spi_sdi3(spi_flash_sd_3_out_x)
+  );
+
+  axi_address_fix_adder #(
+    .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH)
+  ) axi_address_fix_adder_virtual_adc_i (
+    .axi_master_awaddr_in(AXI_M_ADC_awaddr_in_sig),
+    .axi_master_araddr_in(AXI_M_ADC_araddr_in_sig),
+
+    .axi_master_araddr_out(AXI_M_ADC_araddr_sig),
+    .axi_master_awaddr_out(AXI_M_ADC_awaddr_sig)
+  );
+
+  axi_spi_slave #(
+    .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) spi2axi_bridge_virtual_adc_i (
+    .axi_aclk(AXI_ACLK),
+    .axi_aresetn(AXI_ARSTN),
+
+    .test_mode('0),
+
+    .axi_master_aw_valid(AXI_M_ADC_awvalid_sig),
+    .axi_master_aw_id(AXI_M_ADC_awid_sig),
+    .axi_master_aw_prot(AXI_M_ADC_awprot_sig),
+    .axi_master_aw_qos(AXI_M_ADC_awqos_sig),
+    .axi_master_aw_cache(AXI_M_ADC_awcache_sig),
+    .axi_master_aw_lock(AXI_M_ADC_awlock_sig),
+    .axi_master_aw_burst(AXI_M_ADC_awburst_sig),
+    .axi_master_aw_size(AXI_M_ADC_awsize_sig),
+    .axi_master_aw_len(AXI_M_ADC_awlen_sig),
+    .axi_master_aw_addr(AXI_M_ADC_awaddr_in_sig),
+    .axi_master_aw_ready(AXI_M_ADC_awready_sig),
+
+    .axi_master_w_valid(AXI_M_ADC_wvalid_sig),
+    .axi_master_w_data (AXI_M_ADC_wdata_sig),
+    .axi_master_w_strb (AXI_M_ADC_wstrb_sig),
+    .axi_master_w_last (AXI_M_ADC_wlast_sig),
+    .axi_master_w_ready(AXI_M_ADC_wready_sig),
+
+    .axi_master_b_valid(AXI_M_ADC_bvalid_sig),
+    .axi_master_b_id(AXI_M_ADC_bid_sig),
+    .axi_master_b_resp(AXI_M_ADC_bresp_sig),
+    .axi_master_b_ready(AXI_M_ADC_bready_sig),
+
+    .axi_master_ar_valid(AXI_M_ADC_arvalid_sig),
+    .axi_master_ar_id(AXI_M_ADC_arid_sig),
+    .axi_master_ar_prot(AXI_M_ADC_arprot_sig),
+    .axi_master_ar_qos(AXI_M_ADC_arqos_sig),
+    .axi_master_ar_cache(AXI_M_ADC_arcache_sig),
+    .axi_master_ar_lock(AXI_M_ADC_arlock_sig),
+    .axi_master_ar_burst(AXI_M_ADC_arburst_sig),
+    .axi_master_ar_size(AXI_M_ADC_arsize_sig),
+    .axi_master_ar_len(AXI_M_ADC_arlen_sig),
+    .axi_master_ar_addr(AXI_M_ADC_araddr_in_sig),
+    .axi_master_ar_ready(AXI_M_ADC_arready_sig),
+
+    .axi_master_r_valid(AXI_M_ADC_rvalid_sig),
+    .axi_master_r_id(AXI_M_ADC_rid_sig),
+    .axi_master_r_data(AXI_M_ADC_rdata_sig),
+    .axi_master_r_resp(AXI_M_ADC_rresp_sig),
+    .axi_master_r_last(AXI_M_ADC_rlast_sig),
+    .axi_master_r_ready(AXI_M_ADC_rready_sig),
+
+    .spi_sclk(spi_sck_out_x),
+    .spi_cs  (spi_cs_0_out_x),
+    .spi_sdo1(spi_sd_1_in_x),
+    .spi_sdi0(spi_sd_0_out_x),
+    .spi_sdi2(spi_sd_2_out_x),
+    .spi_sdi3(spi_sd_3_out_x)
+  );
+
+  pad_ring pad_ring_i (
+% for pad in total_pad_list:
+${pad.pad_ring_bonding_bonding}
+% endfor
+    .pad_attributes_i(pad_attributes)
+  );
+
+${pad_constant_driver_assign}
+
+${pad_mux_process}
+
+  pad_control #(
+    .reg_req_t(reg_pkg::reg_req_t),
+    .reg_rsp_t(reg_pkg::reg_rsp_t),
+    .NUM_PAD  (core_v_mini_mcu_pkg::NUM_PAD)
+  ) pad_control_i (
+    .clk_i(clk_in_x),
+    .rst_ni(rst_ngen),
+    .reg_req_i(pad_req),
+    .reg_rsp_o(pad_resp),
+    .pad_attributes_o(pad_attributes),
+    .pad_muxes_o(pad_muxes)
+  );
+
+  rstgen rstgen_i (
+    .clk_i(clk_in_x),
+    .rst_ni(rst_n),
+    .test_mode_i(1'b0),
+    .rst_no(rst_ngen),
+    .init_no()
+  );
+
+endmodule

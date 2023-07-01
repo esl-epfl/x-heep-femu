@@ -1,0 +1,139 @@
+/*
+* Copyright 2023 EPFL
+* Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+* SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+*
+* Author: Simone Machetti - simone.machetti@epfl.ch
+*/
+
+{
+    pads: {
+
+        clk: {
+            num: 1,
+            type: input
+        },
+        rst: {
+            num: 1,
+            active: low,
+            driven_manually: True
+            type: input
+        },
+        boot_select: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        execute_from_flash: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        jtag_tck: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        jtag_tms: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        jtag_trst: {
+            num: 1,
+            keep_internal: True
+            active: low,
+            type: input
+        },
+        jtag_tdi: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        jtag_tdo: {
+            num: 1,
+            keep_internal: True
+            type: output
+        },
+        uart_rx: {
+            num: 1,
+            keep_internal: True
+            type: input
+        },
+        uart_tx: {
+            num: 1,
+            keep_internal: True
+            type: output
+        },
+        exit_valid: {
+            num: 1,
+            keep_internal: True
+            type: output
+        },
+        gpio_0: {
+            num: 1,
+            keep_internal: True
+            type: inout
+        },
+        gpio_1: {
+            num: 1,
+            keep_internal: True
+            type: inout
+        },
+        gpio: {
+            num: 30,
+            num_offset: 2,
+            type: inout
+        },
+        spi_flash_sck: {
+            num: 1,
+            keep_internal: True
+            type: inout
+        },
+        spi_flash_cs: {
+            num: 2,
+            keep_internal: True
+            type: inout
+        },
+        spi_flash_sd: {
+            num: 4,
+            keep_internal: True
+            type: inout
+        },
+        spi_sck: {
+            num: 1,
+            keep_internal: True
+            type: inout
+        },
+        spi_cs: {
+            num: 2,
+            keep_internal: True
+            type: inout
+        },
+        spi_sd: {
+            num: 4,
+            keep_internal: True
+            type: inout
+        },
+        spi2_cs: {
+            num: 2,
+            type: inout
+        },
+        spi2_sck: {
+            num: 1,
+            type: inout
+        },
+        spi2_sd: {
+            num: 4,
+            type: inout
+        },
+        i2c_scl: {
+            num: 1,
+            type: inout
+        },
+        i2c_sda: {
+            num: 1,
+            type: inout
+        }
+    }
+}
