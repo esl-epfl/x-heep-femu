@@ -1,0 +1,13 @@
+*.log
+*.so
+*.hex
+*.elf
+*.dis
+*.map
+*.do
+
+imp/build/
+imp/.Xil
+imp/vendor/x_heep/
+imp/vendor/x_heep.lock.hjson
+
