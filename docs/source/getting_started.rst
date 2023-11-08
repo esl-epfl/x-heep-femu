@@ -30,8 +30,8 @@ Insert the SD card and run the last command again:
     tmpfs            16G  115M   16G   1% /dev/shm
     tmpfs           5.0M  4.0K  5.0M   1% /run/lock
     /dev/nvme0n1p1  286M  108M  179M  38% /boot/efi
-    /dev/sda1       100M  6.5M   94M   7% /media/juan/D25F-20D1                             <------
-    /dev/sda2        15G  6.3G  7.6G  46% /media/juan/4573de46-64a6-4219-bcaf-1b50922057e6  <------
+    /dev/sda1       100M  6.5M   94M   7% /media/user/D25F-20D1                             <------
+    /dev/sda2        15G  6.3G  7.6G  46% /media/user/4573de46-64a6-4219-bcaf-1b50432057e6  <------
 
 Format both partitions. For instance, open the disk manager and delete the two partitions so now its empty. Then add a new partition, name it ``/dev/sda`` and mark ``erase`` to make a new clean partition with the entirety of the space of the SD card.
 
