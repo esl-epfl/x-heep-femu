@@ -12,27 +12,12 @@ The needed material for using our FPGA platform is the following:
  - A MicroSD card with at least 16GB of memory.
  - A PC (the Linux operating system is suggested) with a Web browser installed.
 
-## Repository structure
-
-The repository is organized as follows:
-
-    .
-    ├── .github
-    ├── imp
-    │   ├── rtl
-    │   ├── scripts
-    │   ├── pads
-    │   ├── pinout
-    │   └── vendor
-    ├── doc
-    └── README.md
-
 ## Setup
 
 Follow these steps to get started with our FPGA platform:
 
  1. Download our pre-compiled PetaLinux-based image from this Drive [FEMU MicroSD Image](http://tiny.cc/femu_microsd_image) and load it to your MicroSD card. You can find more information about the writing process in this documentation: [Write SD card](https://pynq.readthedocs.io/en/latest/appendix/sdcard.html).
- 2. Insert your MicroSD card in your Pynq-Z2 board and make sure the boot jumper is in the SD position. Then, power up the board. LED3 will switch on as soon as the Linux booting and the bitstream loading processes are completed.
+ 2. Insert your MicroSD card in your Pynq-Z2 board and make sure the boot jumper is in the SD position. Then, power up the board.
  3. You can now connect to the board.
 
 ## Board connection
@@ -56,17 +41,35 @@ Connect the board to the same network of your PC using the Ethernet cable (as ex
 
 NOTE: the Linux username and password are `xilinx` and `xilinx`, respectively.
 
+## Download SDK
+
+Connect to the board using the `Ethernet` way. Then, navigate to your `home` directory and run this command from your terminal to download the Software Development Kit (SDK):
+```
+git clone https://github.com/simone-machetti/x-heep-femu-sdk.git
+```
+
 ## Software exploration
 
 Read our `Read the Docs` documentation at the following link to learn in detail how to run your own applications on our FPGA platform and enjoy all its software exploration functionalities: [FEMU Documentation](http://tiny.cc/femu_documentation).
 
 *---Enjoy our FPGA platform!*
 
-## Hardware exploration (bonus)
+## Modify the hardware
 
-Even if our platform is NOT thought to perform hardware exploration, this section quickly describes the content of the **imp/** folder, so that you may be able to modify the hardware if needed.
+This section quickly describes the content of this repository, so that you may be able to modify the hardware if needed.
 
-The folder is organized as follows:
+    .
+    ├── .github
+    ├── imp
+    │   ├── rtl
+    │   ├── scripts
+    │   ├── pads
+    │   ├── pinout
+    │   └── vendor
+    ├── doc
+    └── README.md
+
+The **imp/** folder is organized as follows:
 
  - **rtl/** contains the RTL code of our platform top-level and of all the modules that are instantiated outside X-HEEP.
  - **scripts/** contains the TCL script to automatically generate the Vivado block design of our platform.
