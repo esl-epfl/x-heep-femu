@@ -13,11 +13,11 @@ create_bd_design "processing_system"
 # Add Zynq Processing System
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {5}] [get_bd_cells processing_system7_0]
+set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {5} CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP1 {1}] [get_bd_cells processing_system7_0]
 
 # Add AXI Interconnect
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0
-set_property -dict [list CONFIG.NUM_SI {3} CONFIG.NUM_MI {4}] [get_bd_cells axi_interconnect_0]
+set_property -dict [list CONFIG.NUM_SI {5} CONFIG.NUM_MI {6}] [get_bd_cells axi_interconnect_0]
 
 # Add Constant
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0
@@ -83,6 +83,11 @@ make_bd_intf_pins_external [get_bd_intf_pins axi_interconnect_0/S01_AXI]
 set_property name AXI_M_ADC [get_bd_intf_ports S01_AXI_0]
 set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_M_ADC]
 
+# Create port AXI_M_OBI
+make_bd_intf_pins_external [get_bd_intf_pins axi_interconnect_0/S03_AXI]
+set_property name AXI_M_OBI [get_bd_intf_ports S03_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_M_OBI]
+
 # Create port AXI_S_FLASH
 make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M00_AXI]
 set_property name AXI_S_FLASH [get_bd_intf_ports M00_AXI_0]
@@ -95,9 +100,17 @@ set_property name AXI_S_PERF_CNT [get_bd_intf_ports M01_AXI_0]
 set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_PERF_CNT]
 set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_PERF_CNT]
 
+# Create port AXI_S_OBI
+make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M04_AXI]
+set_property name AXI_S_OBI [get_bd_intf_ports M04_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_OBI]
+set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_OBI]
+
 # Connect AXI Interconnect and Zynq Processing System
 connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S02_AXI]
+connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP1] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S04_AXI]
 connect_bd_intf_net -boundary_type upper [get_bd_intf_pins axi_interconnect_0/M03_AXI] [get_bd_intf_pins processing_system7_0/S_AXI_HP0]
+connect_bd_intf_net -boundary_type upper [get_bd_intf_pins axi_interconnect_0/M05_AXI] [get_bd_intf_pins processing_system7_0/S_AXI_HP1]
 
 # Create Block RAM
 create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 blk_mem_gen_0
@@ -116,9 +129,14 @@ apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_s
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M00_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M01_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M03_ACLK]
+apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M04_ACLK]
+apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M05_ACLK]
+
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S00_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S01_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S02_ACLK]
+apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S03_ACLK]
+apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S04_ACLK]
 
 # Create port AXI_ACLK
 create_bd_port -dir O -type clk AXI_ACLK
