@@ -50,7 +50,7 @@ The following image shows the block diagram of the ASIC implementation of X-HEEP
 
 In addition to the already mentioned peripherals, we added a pad ring, a pad controller, a frequency-locked loop (FLL), and an MCU controller. Then, we synthesised and placed and routed the design with ``TSMC 65nm CMOS technology`` and two flavours of cells: low-voltage threshold (LVT) and high-voltage threshold (HVT). The former is high-performance but high-power, while the latter is low-power but low-performance.
 
-We simulated our design with dedicated test applications storing the switching activity file. Then, we performed a detailed power analysis to extract the leakage and average dynamic power of each IP in the architecture. These values are stored in two CSV files, called ``TSMC_65nm_LVT_20MHz.csv`` and ``TSMC_65nm_HVT_20MHz.csv``, located in the folder ``~/x_heep/sw/riscv/pwr_val``.
+We simulated our design with dedicated test applications storing the switching activity file. Then, we performed a detailed power analysis to extract the leakage and average dynamic power of each IP in the architecture. These values are stored in two CSV files, called ``TSMC_65nm_LVT_20MHz.csv`` and ``TSMC_65nm_HVT_20MHz.csv``, located in the folder ``~/x-heep-femu-sdk/sw/riscv/pwr_val``.
 
 .. warning::
 

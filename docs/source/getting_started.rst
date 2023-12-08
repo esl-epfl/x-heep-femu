@@ -14,7 +14,7 @@ Jupyter notebook
 
 Connect to Linux, running on the board, using your Web browser and follow these steps.
 
-Click on ``jupyter_notebooks``:
+Navigate to ``arm`` and click on ``jupyter_notebooks``:
 
 .. image:: ./images/jupyter_1.png
   :width: 400
@@ -39,11 +39,11 @@ Python script
 
 Connect to Linux, running on the board, using SSH from your terminal and follow these steps.
 
-Enter the X-HEEP folder:
+Enter the X-HEEP FEMU SDK folder:
 
 .. code-block:: console
 
-    cd x_heep/
+    cd x-heep-femu-sdk/
 
 Run sudo:
 
@@ -82,11 +82,11 @@ Python shell
 
 Connect to Linux, running on the board, using SSH from your terminal and follow these steps.
 
-Enter the ``x_heep/`` folder:
+Enter the X-HEEP FEMU SDK folder:
 
 .. code-block:: console
 
-    cd x_heep
+    cd x-heep-femu-sdk/
 
 Run sudo:
 
