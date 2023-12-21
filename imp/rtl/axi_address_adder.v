@@ -10,7 +10,7 @@ module axi_address_adder #
 (
   parameter integer AXI_ADDR_WIDTH = 32,
   parameter integer C_S_AXI_DATA_WIDTH = 32,
-  parameter integer C_S_AXI_ADDR_WIDTH = 4
+  parameter integer C_S_AXI_ADDR_WIDTH = 32
 )(
   input wire [AXI_ADDR_WIDTH-1:0] axi_master_awaddr_in,
   input wire [AXI_ADDR_WIDTH-1:0] axi_master_araddr_in,
