@@ -17,7 +17,7 @@ set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE
 
 # Add AXI Interconnect
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0
-set_property -dict [list CONFIG.NUM_SI {5} CONFIG.NUM_MI {6}] [get_bd_cells axi_interconnect_0]
+set_property -dict [list CONFIG.NUM_SI {5} CONFIG.NUM_MI {8}] [get_bd_cells axi_interconnect_0]
 
 # Add Constant
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0
@@ -106,6 +106,18 @@ set_property name AXI_S_OBI [get_bd_intf_ports M04_AXI_0]
 set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_OBI]
 set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_OBI]
 
+# Create port AXI_S_R_OBI
+make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M07_AXI]
+set_property name AXI_S_R_OBI [get_bd_intf_ports M07_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_R_OBI]
+set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_R_OBI]
+
+# Create port AXI_S_R_OBI_BAA
+make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M06_AXI]
+set_property name AXI_S_R_OBI_BAA [get_bd_intf_ports M06_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_R_OBI_BAA]
+set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_R_OBI_BAA]
+
 # Connect AXI Interconnect and Zynq Processing System
 connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S02_AXI]
 connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP1] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S04_AXI]
@@ -126,16 +138,12 @@ connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_0/S_AXI] -boundary_type uppe
 # Connect clock and reset
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/ACLK]
-apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M00_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M01_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M03_ACLK]
-apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M04_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/M05_ACLK]
 
-apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S00_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S01_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S02_ACLK]
-apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S03_ACLK]
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_interconnect_0/S04_ACLK]
 
 # Create port AXI_ACLK
@@ -144,9 +152,31 @@ create_bd_port -dir O -type clk AXI_ACLK
 # Create port AXI_ARSTN
 create_bd_port -dir O -type rst AXI_ARSTN
 
+# Create port X_HEEP_CLK
+create_bd_port -dir I -type clk X_HEEP_CLK
+set_property -dict [list CONFIG.FREQ_HZ 20000000] [get_bd_ports X_HEEP_CLK]
+
+# Create port X_HEEP_RST
+create_bd_port -dir I -type rst X_HEEP_RST
+
 # Connect AXI_ACLK and AXI_ARSTN
 connect_bd_net [get_bd_ports AXI_ACLK] [get_bd_pins processing_system7_0/FCLK_CLK0]
 connect_bd_net [get_bd_ports AXI_ARSTN] [get_bd_pins rst_ps7_0_20M/peripheral_aresetn]
+
+# Connect X_HEEP_CLK and X_HEEP_RST to specific clock ports of interconnect
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/S00_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/S00_ARESETN]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/S03_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/S03_ARESETN]
+
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/M00_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/M00_ARESETN]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/M04_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/M04_ARESETN]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/M06_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/M06_ARESETN]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/M07_ACLK]
+connect_bd_net [get_bd_ports X_HEEP_RST] [get_bd_pins axi_interconnect_0/M07_ARESETN]
 
 # Assign addresses
 assign_bd_address
