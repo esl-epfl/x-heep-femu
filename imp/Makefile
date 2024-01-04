@@ -8,7 +8,8 @@ femu-gen-all: femu-gen-vendor femu-gen-rtl femu-gen-vivado
 
 femu-gen-vendor:
 	cd vendor && \
-	python3 vendor.py x_heep.vendor.hjson --update
+	python3 vendor.py x_heep.vendor.hjson --update && \
+	python3 vendor.py core2axi.vendor.hjson --update
 
 femu-gen-rtl:
 	cd vendor/x_heep && \
