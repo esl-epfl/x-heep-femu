@@ -57,7 +57,6 @@ module femu
   localparam AXI_ADDR_WIDTH = 32;
   localparam AXI_DATA_WIDTH = 32;
 
-  // PM signals
   logic cpu_subsystem_powergate_switch;
   logic cpu_subsystem_powergate_switch_ack;
   logic cpu_subsystem_sleep;
@@ -73,10 +72,6 @@ module femu
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_powergate_iso;
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_set_retentive;
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_clkgate_en;
-
-  // PS SIDE PORTS
-  logic AXI_ACLK;
-  logic AXI_ARSTN;
 
   logic [AXI_ADDR_WIDTH - 1:0] AXI_M_FLASH_araddr_sig;
   logic [1:0] AXI_M_FLASH_arburst_sig;
@@ -158,6 +153,46 @@ module femu
   logic [3:0] AXI_M_ADC_wstrb_sig;
   logic AXI_M_ADC_wvalid_sig;
 
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_OBI_araddr_sig;
+  logic [1:0] AXI_M_OBI_arburst_sig;
+  logic [3:0] AXI_M_OBI_arcache_sig;
+  logic [1:0] AXI_M_OBI_arid_sig;
+  logic [7:0] AXI_M_OBI_arlen_sig;
+  logic [0:0] AXI_M_OBI_arlock_sig;
+  logic [2:0] AXI_M_OBI_arprot_sig;
+  logic [3:0] AXI_M_OBI_arqos_sig;
+  logic AXI_M_OBI_arready_sig;
+  logic [3:0] AXI_M_OBI_arregion;
+  logic [2:0] AXI_M_OBI_arsize_sig;
+  logic AXI_M_OBI_arvalid_sig;
+  logic [AXI_ADDR_WIDTH - 1:0] AXI_M_OBI_awaddr_sig;
+  logic [1:0] AXI_M_OBI_awburst_sig;
+  logic [3:0] AXI_M_OBI_awcache_sig;
+  logic [1:0] AXI_M_OBI_awid_sig;
+  logic [7:0] AXI_M_OBI_awlen_sig;
+  logic [0:0] AXI_M_OBI_awlock_sig;
+  logic [2:0] AXI_M_OBI_awprot_sig;
+  logic [3:0] AXI_M_OBI_awqos_sig;
+  logic AXI_M_OBI_awready_sig;
+  logic [3:0] AXI_M_OBI_awregion;
+  logic [2:0] AXI_M_OBI_awsize_sig;
+  logic AXI_M_OBI_awvalid_sig;
+  logic [1:0] AXI_M_OBI_bid_sig;
+  logic AXI_M_OBI_bready_sig;
+  logic [1:0] AXI_M_OBI_bresp_sig;
+  logic AXI_M_OBI_bvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_OBI_rdata_sig;
+  logic [1:0] AXI_M_OBI_rid_sig;
+  logic AXI_M_OBI_rlast_sig;
+  logic AXI_M_OBI_rready_sig;
+  logic [1:0] AXI_M_OBI_rresp_sig;
+  logic AXI_M_OBI_rvalid_sig;
+  logic [AXI_DATA_WIDTH - 1:0] AXI_M_OBI_wdata_sig;
+  logic AXI_M_OBI_wlast_sig;
+  logic AXI_M_OBI_wready_sig;
+  logic [3:0] AXI_M_OBI_wstrb_sig;
+  logic AXI_M_OBI_wvalid_sig;
+
   logic spi_test_clk_sig;
   logic spi_test_cs_sig;
   logic [3:0] spi_test_data_sig;
@@ -167,6 +202,9 @@ module femu
 
   logic [AXI_ADDR_WIDTH-1:0] AXI_M_ADC_awaddr_in_sig;
   logic [AXI_ADDR_WIDTH-1:0] AXI_M_ADC_araddr_in_sig;
+
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_OBI_awaddr_in_sig;
+  logic [AXI_ADDR_WIDTH-1:0] AXI_M_OBI_araddr_in_sig;
 
   logic [3 : 0] AXI_S_FLASH_awaddr_sig;
   logic [2:0] AXI_S_FLASH_awprot_sig;
@@ -188,6 +226,26 @@ module femu
   logic [1:0] AXI_S_FLASH_rresp_sig;
   logic AXI_S_FLASH_rvalid_sig;
 
+  logic [3 : 0] AXI_S_OBI_awaddr_sig;
+  logic [2:0] AXI_S_OBI_awprot_sig;
+  logic AXI_S_OBI_awready_sig;
+  logic AXI_S_OBI_awvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_OBI_wdata_sig;
+  logic AXI_S_OBI_wready_sig;
+  logic [(AXI_DATA_WIDTH / 8)-1 : 0] AXI_S_OBI_wstrb_sig;
+  logic AXI_S_OBI_wvalid_sig;
+  logic AXI_S_OBI_bready_sig;
+  logic [1:0] AXI_S_OBI_bresp_sig;
+  logic AXI_S_OBI_bvalid_sig;
+  logic [3 : 0] AXI_S_OBI_araddr_sig;
+  logic [2 : 0] AXI_S_OBI_arprot_sig;
+  logic AXI_S_OBI_arready_sig;
+  logic AXI_S_OBI_arvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_OBI_rdata_sig;
+  logic AXI_S_OBI_rready_sig;
+  logic [1:0] AXI_S_OBI_rresp_sig;
+  logic AXI_S_OBI_rvalid_sig;
+
   logic [7 : 0] AXI_S_PERF_CNT_awaddr_sig;
   logic [2:0] AXI_S_PERF_CNT_awprot_sig;
   logic AXI_S_PERF_CNT_awready_sig;
@@ -208,15 +266,15 @@ module femu
   logic [1:0] AXI_S_PERF_CNT_rresp_sig;
   logic AXI_S_PERF_CNT_rvalid_sig;
 
-  // PAD controller
   reg_req_t pad_req;
   reg_rsp_t pad_resp;
+
+  obi_req_t obi_req;
+  obi_resp_t obi_resp;
+
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
 
-  logic rst_ngen;
-
-  // input, output pins from core_v_mini_mcu
   logic clk_in_x,clk_out_x,clk_oe_x;
 
   logic rst_nin_x,rst_nout_x,rst_noe_x;
@@ -352,14 +410,11 @@ module femu
   logic i2c_sda_in_x,i2c_sda_out_x,i2c_sda_oe_x;
 
 
-  wire         clk_gen;
+  wire         clk_i;
   logic [31:0] exit_value;
   wire         rst_n;
 
-  // low active reset
   assign rst_n   = !rst_i;
-
-  // reset LED for debugging
   assign rst_led = rst_n;
 
   assign execute_from_flash_in_x = 1'b0;
@@ -367,18 +422,13 @@ module femu
 
   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
     .clk_125MHz(clk_in),
-    .clk_out1_0(clk_gen)
+    .clk_out1_0(clk_i)
   );
 
-  // eXtension Interface
   if_xif #() ext_if ();
-
-  logic clk_i;
-  assign clk_i = clk_gen;
 
   core_v_mini_mcu #(
   ) core_v_mini_mcu_i (
-
     .rst_ni(rst_ngen),
     .clk_i(clk_in_x),
 
@@ -632,8 +682,8 @@ module femu
     .xif_result_if(ext_if),
     .ext_xbar_master_req_i('0),
     .ext_xbar_master_resp_o(),
-    .ext_xbar_slave_req_o(),
-    .ext_xbar_slave_resp_i('0),
+    .ext_xbar_slave_req_o(obi_req),
+    .ext_xbar_slave_resp_i(obi_resp),
     .ext_peripheral_slave_req_o(),
     .ext_peripheral_slave_resp_i('0),
     .external_subsystem_powergate_switch_o(),
@@ -740,16 +790,16 @@ module femu
     .FIXED_IO_ps_clk(FIXED_IO_ps_clk),
     .FIXED_IO_ps_porb(FIXED_IO_ps_porb),
     .FIXED_IO_ps_srstb(FIXED_IO_ps_srstb),
-    .UART_rxd(uart_tx_out_x),
-    .UART_txd(uart_rx_in_x),
+    .UART_RX(uart_tx_out_x),
+    .UART_TX(uart_rx_in_x),
     .gpio_jtag_tck_i(jtag_tck_in_x),
     .gpio_jtag_tms_i(jtag_tms_in_x),
     .gpio_jtag_trst_ni(jtag_trst_nin_x),
     .gpio_jtag_tdi_i(jtag_tdi_in_x),
     .gpio_jtag_tdo_o(jtag_tdo_out_x),
 
-    .AXI_ACLK(AXI_ACLK),
-    .AXI_ARSTN(AXI_ARSTN),
+    .X_HEEP_CLK(clk_in_x),
+    .X_HEEP_RSTN(rst_ngen),
 
     .AXI_M_FLASH_araddr(AXI_M_FLASH_araddr_sig),
     .AXI_M_FLASH_arburst(AXI_M_FLASH_arburst_sig),
@@ -831,6 +881,46 @@ module femu
     .AXI_M_ADC_wstrb(AXI_M_ADC_wstrb_sig),
     .AXI_M_ADC_wvalid(AXI_M_ADC_wvalid_sig),
 
+    .AXI_M_OBI_araddr(AXI_M_OBI_araddr_sig),
+    .AXI_M_OBI_arburst(AXI_M_OBI_arburst_sig),
+    .AXI_M_OBI_arcache(AXI_M_OBI_arcache_sig),
+    .AXI_M_OBI_arid(AXI_M_OBI_arid_sig),
+    .AXI_M_OBI_arlen(AXI_M_OBI_arlen_sig),
+    .AXI_M_OBI_arlock(AXI_M_OBI_arlock_sig),
+    .AXI_M_OBI_arprot(AXI_M_OBI_arprot_sig),
+    .AXI_M_OBI_arqos(AXI_M_OBI_arqos_sig),
+    .AXI_M_OBI_arready(AXI_M_OBI_arready_sig),
+    .AXI_M_OBI_arregion(AXI_M_OBI_arregion_sig),
+    .AXI_M_OBI_arsize(AXI_M_OBI_arsize_sig),
+    .AXI_M_OBI_arvalid(AXI_M_OBI_arvalid_sig),
+    .AXI_M_OBI_awaddr(AXI_M_OBI_awaddr_sig),
+    .AXI_M_OBI_awburst(AXI_M_OBI_awburst_sig),
+    .AXI_M_OBI_awcache(AXI_M_OBI_awcache_sig),
+    .AXI_M_OBI_awid(AXI_M_OBI_awid_sig),
+    .AXI_M_OBI_awlen(AXI_M_OBI_awlen_sig),
+    .AXI_M_OBI_awlock(AXI_M_OBI_awlock_sig),
+    .AXI_M_OBI_awprot(AXI_M_OBI_awprot_sig),
+    .AXI_M_OBI_awqos(AXI_M_OBI_awqos_sig),
+    .AXI_M_OBI_awready(AXI_M_OBI_awready_sig),
+    .AXI_M_OBI_awregion(AXI_M_OBI_awregion_sig),
+    .AXI_M_OBI_awsize(AXI_M_OBI_awsize_sig),
+    .AXI_M_OBI_awvalid(AXI_M_OBI_awvalid_sig),
+    .AXI_M_OBI_bid(AXI_M_OBI_bid_sig),
+    .AXI_M_OBI_bready(AXI_M_OBI_bready_sig),
+    .AXI_M_OBI_bresp(AXI_M_OBI_bresp_sig),
+    .AXI_M_OBI_bvalid(AXI_M_OBI_bvalid_sig),
+    .AXI_M_OBI_rdata(AXI_M_OBI_rdata_sig),
+    .AXI_M_OBI_rid(AXI_M_OBI_rid_sig),
+    .AXI_M_OBI_rlast(AXI_M_OBI_rlast_sig),
+    .AXI_M_OBI_rready(AXI_M_OBI_rready_sig),
+    .AXI_M_OBI_rresp(AXI_M_OBI_rresp_sig),
+    .AXI_M_OBI_rvalid(AXI_M_OBI_rvalid_sig),
+    .AXI_M_OBI_wdata(AXI_M_OBI_wdata_sig),
+    .AXI_M_OBI_wlast(AXI_M_OBI_wlast_sig),
+    .AXI_M_OBI_wready(AXI_M_OBI_wready_sig),
+    .AXI_M_OBI_wstrb(AXI_M_OBI_wstrb_sig),
+    .AXI_M_OBI_wvalid(AXI_M_OBI_wvalid_sig),
+
     .AXI_S_FLASH_araddr(AXI_S_FLASH_araddr_sig),
     .AXI_S_FLASH_arprot(AXI_S_FLASH_arprot_sig),
     .AXI_S_FLASH_arready(AXI_S_FLASH_arready_sig),
@@ -869,15 +959,35 @@ module femu
     .AXI_S_PERF_CNT_wdata(AXI_S_PERF_CNT_wdata_sig),
     .AXI_S_PERF_CNT_wready(AXI_S_PERF_CNT_wready_sig),
     .AXI_S_PERF_CNT_wstrb(AXI_S_PERF_CNT_wstrb_sig),
-    .AXI_S_PERF_CNT_wvalid(AXI_S_PERF_CNT_wvalid_sig)
+    .AXI_S_PERF_CNT_wvalid(AXI_S_PERF_CNT_wvalid_sig),
+
+    .AXI_S_OBI_araddr(AXI_S_OBI_araddr_sig),
+    .AXI_S_OBI_arprot(AXI_S_OBI_arprot_sig),
+    .AXI_S_OBI_arready(AXI_S_OBI_arready_sig),
+    .AXI_S_OBI_arvalid(AXI_S_OBI_arvalid_sig),
+    .AXI_S_OBI_awaddr(AXI_S_OBI_awaddr_sig),
+    .AXI_S_OBI_awprot(AXI_S_OBI_awprot_sig),
+    .AXI_S_OBI_awready(AXI_S_OBI_awready_sig),
+    .AXI_S_OBI_awvalid(AXI_S_OBI_awvalid_sig),
+    .AXI_S_OBI_bready(AXI_S_OBI_bready_sig),
+    .AXI_S_OBI_bresp(AXI_S_OBI_bresp_sig),
+    .AXI_S_OBI_bvalid(AXI_S_OBI_bvalid_sig),
+    .AXI_S_OBI_rdata(AXI_S_OBI_rdata_sig),
+    .AXI_S_OBI_rready(AXI_S_OBI_rready_sig),
+    .AXI_S_OBI_rresp(AXI_S_OBI_rresp_sig),
+    .AXI_S_OBI_rvalid(AXI_S_OBI_rvalid_sig),
+    .AXI_S_OBI_wdata(AXI_S_OBI_wdata_sig),
+    .AXI_S_OBI_wready(AXI_S_OBI_wready_sig),
+    .AXI_S_OBI_wstrb(AXI_S_OBI_wstrb_sig),
+    .AXI_S_OBI_wvalid(AXI_S_OBI_wvalid_sig)
   );
 
   performance_counters #(
     .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
     .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) performance_counters_i (
-    .S_AXI_ACLK(AXI_ACLK),
-    .S_AXI_ARESETN(AXI_ARSTN),
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
 
     .S_AXI_AWADDR (AXI_S_PERF_CNT_awaddr_sig),
     .S_AXI_AWPROT (AXI_S_PERF_CNT_awprot_sig),
@@ -949,8 +1059,8 @@ module femu
     .axi_master_araddr_out(AXI_M_FLASH_araddr_sig),
     .axi_master_awaddr_out(AXI_M_FLASH_awaddr_sig),
 
-    .S_AXI_ACLK(AXI_ACLK),
-    .S_AXI_ARESETN(AXI_ARSTN),
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
 
     .S_AXI_AWADDR (AXI_S_FLASH_awaddr_sig),
     .S_AXI_AWPROT (AXI_S_FLASH_awprot_sig),
@@ -976,8 +1086,8 @@ module femu
   axi_spi_slave #(
     .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) spi2axi_bridge_virtual_flash_i (
-    .axi_aclk(AXI_ACLK),
-    .axi_aresetn(AXI_ARSTN),
+    .axi_aclk(clk_in_x),
+    .axi_aresetn(rst_ngen),
 
     .test_mode('0),
 
@@ -1044,8 +1154,8 @@ module femu
   axi_spi_slave #(
     .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) spi2axi_bridge_virtual_adc_i (
-    .axi_aclk(AXI_ACLK),
-    .axi_aresetn(AXI_ARSTN),
+    .axi_aclk(clk_in_x),
+    .axi_aresetn(rst_ngen),
 
     .test_mode('0),
 
@@ -1097,6 +1207,106 @@ module femu
     .spi_sdi0(spi_sd_0_out_x),
     .spi_sdi2(spi_sd_2_out_x),
     .spi_sdi3(spi_sd_3_out_x)
+  );
+
+  axi_address_adder #(
+    .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
+    .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) axi_address_adder_virtual_obi_i (
+    .axi_master_awaddr_in(32'h0FFFFFFF & AXI_M_OBI_awaddr_in_sig),
+    .axi_master_araddr_in(32'h0FFFFFFF & AXI_M_OBI_araddr_in_sig),
+
+    .axi_master_araddr_out(AXI_M_OBI_araddr_sig),
+    .axi_master_awaddr_out(AXI_M_OBI_awaddr_sig),
+
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
+
+    .S_AXI_AWADDR (AXI_S_OBI_awaddr_sig),
+    .S_AXI_AWPROT (AXI_S_OBI_awprot_sig),
+    .S_AXI_AWVALID(AXI_S_OBI_awvalid_sig),
+    .S_AXI_AWREADY(AXI_S_OBI_awready_sig),
+    .S_AXI_WDATA  (AXI_S_OBI_wdata_sig),
+    .S_AXI_WSTRB  (AXI_S_OBI_wstrb_sig),
+    .S_AXI_WVALID (AXI_S_OBI_wvalid_sig),
+    .S_AXI_WREADY (AXI_S_OBI_wready_sig),
+    .S_AXI_BRESP  (AXI_S_OBI_bresp_sig),
+    .S_AXI_BVALID (AXI_S_OBI_bvalid_sig),
+    .S_AXI_BREADY (AXI_S_OBI_bready_sig),
+    .S_AXI_ARADDR (AXI_S_OBI_araddr_sig),
+    .S_AXI_ARPROT (AXI_S_OBI_arprot_sig),
+    .S_AXI_ARVALID(AXI_S_OBI_arvalid_sig),
+    .S_AXI_ARREADY(AXI_S_OBI_arready_sig),
+    .S_AXI_RDATA  (AXI_S_OBI_rdata_sig),
+    .S_AXI_RRESP  (AXI_S_OBI_rresp_sig),
+    .S_AXI_RVALID (AXI_S_OBI_rvalid_sig),
+    .S_AXI_RREADY (AXI_S_OBI_rready_sig)
+  );
+
+  core2axi #(
+    .AXI4_WDATA_WIDTH(AXI_DATA_WIDTH),
+    .AXI4_RDATA_WIDTH(AXI_DATA_WIDTH)
+  ) obi2axi_bridge_virtual_obi_i (
+    .clk_i(clk_in_x),
+    .rst_ni(rst_ngen),
+
+    .data_req_i(obi_req.req),
+    .data_gnt_o(obi_resp.gnt),
+    .data_rvalid_o(obi_resp.rvalid),
+    .data_addr_i(obi_req.addr),
+    .data_we_i(obi_req.we),
+    .data_be_i(obi_req.be),
+    .data_rdata_o(obi_resp.rdata),
+    .data_wdata_i(obi_req.wdata),
+
+    .aw_id_o(AXI_M_OBI_awid_sig),
+    .aw_addr_o(AXI_M_OBI_awaddr_in_sig),
+    .aw_len_o(AXI_M_OBI_awlen_sig),
+    .aw_size_o(AXI_M_OBI_awsize_sig),
+    .aw_burst_o(AXI_M_OBI_awburst_sig),
+    .aw_lock_o(AXI_M_OBI_awlock_sig),
+    .aw_cache_o(AXI_M_OBI_awcache_sig),
+    .aw_prot_o(AXI_M_OBI_awprot_sig),
+    .aw_region_o(AXI_M_OBI_awregion_sig),
+    .aw_user_o(),
+    .aw_qos_o(AXI_M_OBI_awqos_sig),
+    .aw_valid_o(AXI_M_OBI_awvalid_sig),
+    .aw_ready_i(AXI_M_OBI_awready_sig),
+
+    .w_data_o(AXI_M_OBI_wdata_sig),
+    .w_strb_o(AXI_M_OBI_wstrb_sig),
+    .w_last_o(AXI_M_OBI_wlast_sig),
+    .w_user_o(),
+    .w_valid_o(AXI_M_OBI_wvalid_sig),
+    .w_ready_i(AXI_M_OBI_wready_sig),
+
+    .b_id_i(AXI_M_OBI_bid_sig),
+    .b_resp_i(AXI_M_OBI_bresp_sig),
+    .b_valid_i(AXI_M_OBI_bvalid_sig),
+    .b_user_i('0),
+    .b_ready_o(AXI_M_OBI_bready_sig),
+
+    .ar_id_o(AXI_M_OBI_arid_sig),
+    .ar_addr_o(AXI_M_OBI_araddr_in_sig),
+    .ar_len_o(AXI_M_OBI_arlen_sig),
+    .ar_size_o(AXI_M_OBI_arsize_sig),
+    .ar_burst_o(AXI_M_OBI_arburst_sig),
+    .ar_lock_o(AXI_M_OBI_arlock_sig),
+    .ar_cache_o(AXI_M_OBI_arcache_sig),
+    .ar_prot_o(AXI_M_OBI_arprot_sig),
+    .ar_region_o(AXI_M_OBI_arregion_sig),
+    .ar_user_o(),
+    .ar_qos_o(AXI_M_OBI_arqos_sig),
+    .ar_valid_o(AXI_M_OBI_arvalid_sig),
+    .ar_ready_i(AXI_M_OBI_arready_sig),
+
+    .r_id_i(AXI_M_OBI_rid_sig),
+    .r_data_i(AXI_M_OBI_rdata_sig),
+    .r_resp_i(AXI_M_OBI_rresp_sig),
+    .r_last_i(AXI_M_OBI_rlast_sig),
+    .r_user_i('0),
+    .r_valid_i(AXI_M_OBI_rvalid_sig),
+    .r_ready_o(AXI_M_OBI_rready_sig)
   );
 
   pad_ring pad_ring_i (
