@@ -57,7 +57,6 @@ module femu
   localparam AXI_ADDR_WIDTH = 32;
   localparam AXI_DATA_WIDTH = 32;
 
-  // PM signals
   logic cpu_subsystem_powergate_switch;
   logic cpu_subsystem_powergate_switch_ack;
   logic cpu_subsystem_sleep;
@@ -73,10 +72,6 @@ module femu
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_powergate_iso;
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_banks_set_retentive;
   logic [core_v_mini_mcu_pkg::NUM_BANKS-1:0] memory_subsystem_clkgate_en;
-
-  // PS SIDE PORTS
-  logic AXI_ACLK;
-  logic AXI_ARSTN;
 
   logic [AXI_ADDR_WIDTH - 1:0] AXI_M_FLASH_araddr_sig;
   logic [1:0] AXI_M_FLASH_arburst_sig;
@@ -271,32 +266,24 @@ module femu
   logic [1:0] AXI_S_PERF_CNT_rresp_sig;
   logic AXI_S_PERF_CNT_rvalid_sig;
 
-  // PAD controller
   reg_req_t pad_req;
   reg_rsp_t pad_resp;
 
   obi_req_t obi_req;
   obi_resp_t obi_resp;
 
-
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
 
-  logic rst_ngen;
-
-  // input, output pins from core_v_mini_mcu
 % for pad in total_pad_list:
 ${pad.internal_signals}
 % endfor
 
-  wire         clk_gen;
+  wire         clk_i;
   logic [31:0] exit_value;
   wire         rst_n;
 
-  // low active reset
   assign rst_n   = !rst_i;
-
-  // reset LED for debugging
   assign rst_led = rst_n;
 
   assign execute_from_flash_in_x = 1'b0;
@@ -304,18 +291,13 @@ ${pad.internal_signals}
 
   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
     .clk_125MHz(clk_in),
-    .clk_out1_0(clk_gen)
+    .clk_out1_0(clk_i)
   );
 
-  // eXtension Interface
   if_xif #() ext_if ();
-
-  logic clk_i;
-  assign clk_i = clk_gen;
 
   core_v_mini_mcu #(
   ) core_v_mini_mcu_i (
-
     .rst_ni(rst_ngen),
 % for pad in pad_list:
 ${pad.core_v_mini_mcu_bonding}
@@ -437,16 +419,16 @@ ${pad.core_v_mini_mcu_bonding}
     .FIXED_IO_ps_clk(FIXED_IO_ps_clk),
     .FIXED_IO_ps_porb(FIXED_IO_ps_porb),
     .FIXED_IO_ps_srstb(FIXED_IO_ps_srstb),
-    .UART_rxd(uart_tx_out_x),
-    .UART_txd(uart_rx_in_x),
+    .UART_RX(uart_tx_out_x),
+    .UART_TX(uart_rx_in_x),
     .gpio_jtag_tck_i(jtag_tck_in_x),
     .gpio_jtag_tms_i(jtag_tms_in_x),
     .gpio_jtag_trst_ni(jtag_trst_nin_x),
     .gpio_jtag_tdi_i(jtag_tdi_in_x),
     .gpio_jtag_tdo_o(jtag_tdo_out_x),
 
-    .AXI_ACLK(AXI_ACLK),
-    .AXI_ARSTN(AXI_ARSTN),
+    .X_HEEP_CLK(clk_in_x),
+    .X_HEEP_RSTN(rst_ngen),
 
     .AXI_M_FLASH_araddr(AXI_M_FLASH_araddr_sig),
     .AXI_M_FLASH_arburst(AXI_M_FLASH_arburst_sig),
@@ -607,7 +589,7 @@ ${pad.core_v_mini_mcu_bonding}
     .AXI_S_PERF_CNT_wready(AXI_S_PERF_CNT_wready_sig),
     .AXI_S_PERF_CNT_wstrb(AXI_S_PERF_CNT_wstrb_sig),
     .AXI_S_PERF_CNT_wvalid(AXI_S_PERF_CNT_wvalid_sig),
-    
+
     .AXI_S_OBI_araddr(AXI_S_OBI_araddr_sig),
     .AXI_S_OBI_arprot(AXI_S_OBI_arprot_sig),
     .AXI_S_OBI_arready(AXI_S_OBI_arready_sig),
@@ -633,8 +615,8 @@ ${pad.core_v_mini_mcu_bonding}
     .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
     .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) performance_counters_i (
-    .S_AXI_ACLK(AXI_ACLK),
-    .S_AXI_ARESETN(AXI_ARSTN),
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
 
     .S_AXI_AWADDR (AXI_S_PERF_CNT_awaddr_sig),
     .S_AXI_AWPROT (AXI_S_PERF_CNT_awprot_sig),
@@ -706,8 +688,8 @@ ${pad.core_v_mini_mcu_bonding}
     .axi_master_araddr_out(AXI_M_FLASH_araddr_sig),
     .axi_master_awaddr_out(AXI_M_FLASH_awaddr_sig),
 
-    .S_AXI_ACLK(AXI_ACLK),
-    .S_AXI_ARESETN(AXI_ARSTN),
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
 
     .S_AXI_AWADDR (AXI_S_FLASH_awaddr_sig),
     .S_AXI_AWPROT (AXI_S_FLASH_awprot_sig),
@@ -733,8 +715,8 @@ ${pad.core_v_mini_mcu_bonding}
   axi_spi_slave #(
     .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) spi2axi_bridge_virtual_flash_i (
-    .axi_aclk(AXI_ACLK),
-    .axi_aresetn(AXI_ARSTN),
+    .axi_aclk(clk_in_x),
+    .axi_aresetn(rst_ngen),
 
     .test_mode('0),
 
@@ -801,8 +783,8 @@ ${pad.core_v_mini_mcu_bonding}
   axi_spi_slave #(
     .AXI_DATA_WIDTH(AXI_DATA_WIDTH)
   ) spi2axi_bridge_virtual_adc_i (
-    .axi_aclk(AXI_ACLK),
-    .axi_aresetn(AXI_ARSTN),
+    .axi_aclk(clk_in_x),
+    .axi_aresetn(rst_ngen),
 
     .test_mode('0),
 
@@ -856,7 +838,6 @@ ${pad.core_v_mini_mcu_bonding}
     .spi_sdi3(spi_sd_3_out_x)
   );
 
-
   axi_address_adder #(
     .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
     .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
@@ -867,8 +848,8 @@ ${pad.core_v_mini_mcu_bonding}
     .axi_master_araddr_out(AXI_M_OBI_araddr_sig),
     .axi_master_awaddr_out(AXI_M_OBI_awaddr_sig),
 
-    .S_AXI_ACLK(AXI_ACLK),
-    .S_AXI_ARESETN(AXI_ARSTN),
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
 
     .S_AXI_AWADDR (AXI_S_OBI_awaddr_sig),
     .S_AXI_AWPROT (AXI_S_OBI_awprot_sig),
@@ -895,18 +876,18 @@ ${pad.core_v_mini_mcu_bonding}
     .AXI4_WDATA_WIDTH(AXI_DATA_WIDTH),
     .AXI4_RDATA_WIDTH(AXI_DATA_WIDTH)
   ) obi2axi_bridge_virtual_obi_i (
-    .clk_i(AXI_ACLK),
-    .rst_ni(AXI_ARSTN),
-    
-    .data_req_i(obi_req[69]),
-    .data_gnt_o(obi_resp[33]),
-    .data_rvalid_o(obi_resp[32]),
-    .data_addr_i(obi_req[63:32]),
-    .data_we_i(obi_req[68]),
-    .data_be_i(obi_req[67:64]),
-    .data_rdata_o(obi_resp[31:0]),
-    .data_wdata_i(obi_req[31:0]),
-    
+    .clk_i(clk_in_x),
+    .rst_ni(rst_ngen),
+
+    .data_req_i(obi_req.req),
+    .data_gnt_o(obi_resp.gnt),
+    .data_rvalid_o(obi_resp.rvalid),
+    .data_addr_i(obi_req.addr),
+    .data_we_i(obi_req.we),
+    .data_be_i(obi_req.be),
+    .data_rdata_o(obi_resp.rdata),
+    .data_wdata_i(obi_req.wdata),
+
     .aw_id_o(AXI_M_OBI_awid_sig),
     .aw_addr_o(AXI_M_OBI_awaddr_in_sig),
     .aw_len_o(AXI_M_OBI_awlen_sig),
@@ -920,20 +901,20 @@ ${pad.core_v_mini_mcu_bonding}
     .aw_qos_o(AXI_M_OBI_awqos_sig),
     .aw_valid_o(AXI_M_OBI_awvalid_sig),
     .aw_ready_i(AXI_M_OBI_awready_sig),
-    
+
     .w_data_o(AXI_M_OBI_wdata_sig),
     .w_strb_o(AXI_M_OBI_wstrb_sig),
     .w_last_o(AXI_M_OBI_wlast_sig),
     .w_user_o(),
     .w_valid_o(AXI_M_OBI_wvalid_sig),
     .w_ready_i(AXI_M_OBI_wready_sig),
-    
+
     .b_id_i(AXI_M_OBI_bid_sig),
     .b_resp_i(AXI_M_OBI_bresp_sig),
     .b_valid_i(AXI_M_OBI_bvalid_sig),
     .b_user_i('0),
     .b_ready_o(AXI_M_OBI_bready_sig),
-    
+
     .ar_id_o(AXI_M_OBI_arid_sig),
     .ar_addr_o(AXI_M_OBI_araddr_in_sig),
     .ar_len_o(AXI_M_OBI_arlen_sig),
@@ -947,7 +928,7 @@ ${pad.core_v_mini_mcu_bonding}
     .ar_qos_o(AXI_M_OBI_arqos_sig),
     .ar_valid_o(AXI_M_OBI_arvalid_sig),
     .ar_ready_i(AXI_M_OBI_arready_sig),
-    
+
     .r_id_i(AXI_M_OBI_rid_sig),
     .r_data_i(AXI_M_OBI_rdata_sig),
     .r_resp_i(AXI_M_OBI_rresp_sig),
@@ -956,8 +937,6 @@ ${pad.core_v_mini_mcu_bonding}
     .r_valid_i(AXI_M_OBI_rvalid_sig),
     .r_ready_o(AXI_M_OBI_rready_sig)
   );
-
-  
 
   pad_ring pad_ring_i (
 % for pad in total_pad_list:

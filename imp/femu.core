@@ -81,7 +81,7 @@ filesets:
     files:
     - scripts/xilinx_generate_processing_system.tcl: {file_type: tclSource}
     - rtl/axi_address_adder.v: {file_type: verilogSource}
-    - rtl/core2axi.sv: {file_type: systemVerilogSource}
+    - vendor/core2axi/rtl/core2axi.sv: {file_type: systemVerilogSource}
     - rtl/axi_address_fix_adder.v: {file_type: verilogSource}
     - rtl/performance_counters.v: {file_type: verilogSource}
     - rtl/femu.sv: {file_type: systemVerilogSource}
