@@ -17,7 +17,7 @@ set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE
 
 # Add AXI Interconnect
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0
-set_property -dict [list CONFIG.NUM_SI {5} CONFIG.NUM_MI {6}] [get_bd_cells axi_interconnect_0]
+set_property -dict [list CONFIG.NUM_SI {5} CONFIG.NUM_MI {8}] [get_bd_cells axi_interconnect_0]
 
 # Add Constant
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0
@@ -110,6 +110,18 @@ set_property name AXI_S_OBI [get_bd_intf_ports M04_AXI_0]
 set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_OBI]
 set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_OBI]
 
+# Create port AXI_S_R_OBI
+make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M06_AXI]
+set_property name AXI_S_R_OBI [get_bd_intf_ports M06_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_R_OBI]
+set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_R_OBI]
+
+# Create port AXI_S_R_OBI_BAA
+make_bd_intf_pins_external  [get_bd_intf_pins axi_interconnect_0/M07_AXI]
+set_property name AXI_S_R_OBI_BAA [get_bd_intf_ports M07_AXI_0]
+set_property -dict [list CONFIG.FREQ_HZ {20000000}] [get_bd_intf_ports AXI_S_R_OBI_BAA]
+set_property -dict [list CONFIG.PROTOCOL AXI4LITE] [get_bd_intf_ports AXI_S_R_OBI_BAA]
+
 # Create port X_HEEP_CLK
 create_bd_port -dir I -type clk -freq_hz 20000000 X_HEEP_CLK
 
@@ -147,6 +159,8 @@ connect_bd_net [get_bd_pins axi_interconnect_0/M01_ACLK] [get_bd_pins axi_interc
 connect_bd_net [get_bd_pins axi_interconnect_0/S01_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] -boundary_type upper
 connect_bd_net [get_bd_pins axi_interconnect_0/S03_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] -boundary_type upper
 connect_bd_net [get_bd_pins axi_interconnect_0/M04_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] -boundary_type upper
+connect_bd_net [get_bd_pins axi_interconnect_0/M06_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] -boundary_type upper
+connect_bd_net [get_bd_pins axi_interconnect_0/M07_ACLK] [get_bd_pins axi_interconnect_0/S00_ACLK] -boundary_type upper
 connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins axi_interconnect_0/S00_ACLK]
 
 connect_bd_net [get_bd_pins axi_interconnect_0/S00_ARESETN] [get_bd_pins axi_interconnect_0/M00_ARESETN] -boundary_type upper
@@ -154,6 +168,8 @@ connect_bd_net [get_bd_pins axi_interconnect_0/M01_ARESETN] [get_bd_pins axi_int
 connect_bd_net [get_bd_pins axi_interconnect_0/S01_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] -boundary_type upper
 connect_bd_net [get_bd_pins axi_interconnect_0/S03_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] -boundary_type upper
 connect_bd_net [get_bd_pins axi_interconnect_0/M04_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] -boundary_type upper
+connect_bd_net [get_bd_pins axi_interconnect_0/M06_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] -boundary_type upper
+connect_bd_net [get_bd_pins axi_interconnect_0/M07_ARESETN] [get_bd_pins axi_interconnect_0/S00_ARESETN] -boundary_type upper
 connect_bd_net [get_bd_ports X_HEEP_RSTN] [get_bd_pins axi_interconnect_0/S00_ARESETN]
 
 # Assign addresses
