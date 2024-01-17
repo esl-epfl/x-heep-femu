@@ -306,7 +306,7 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
   logic [1:0] AXI_S_R_OBI_BAA_rresp_sig;
   logic AXI_S_R_OBI_BAA_rvalid_sig;
 
-  // PAD controller
+
   reg_req_t pad_req;
   reg_rsp_t pad_resp;
 
@@ -465,17 +465,6 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
 
   assign execute_from_flash_in_x = 1'b0;
   assign boot_select_in_x = 1'b0;
-  
-  external_ila_wrapper external_ila_wrapper_i(
-    .addr_ila(r_obi_req.addr),
-    .be_ila(r_obi_req.be),
-    .clk_ila(clk_in_x),
-    .gnt_ila(r_obi_resp.gnt),
-    .rdata_ila(r_obi_resp.rdata),
-    .req_ila(r_obi_req.req),
-    .rvalid_ila(r_obi_resp.rvalid),
-    .wdata_ila(r_obi_req.wdata),
-    .we_ila(r_obi_req.we));
 
   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
     .clk_125MHz(clk_in),
