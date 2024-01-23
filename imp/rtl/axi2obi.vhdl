@@ -1,23 +1,8 @@
-
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
---                                                                              --
--- Author:         Simone Machetti - simone.machetti@epfl.ch                    --
---                                                                              --
--- Additional contributions by:                                                 --
---                 Name Surname - email (affiliation if not ESL)                --
---                                                                              --
--- Design Name:    axi2obi                                                      --
---                                                                              --
--- Project Name:   X-HEEP                                                       --
---                                                                              --
--- Language:       VHDL                                                         --
---                                                                              --
--- Description:    AXI2OBI bridge module.                                       --
---                                                                              --
-----------------------------------------------------------------------------------
-----------------------------------------------------------------------------------
-
+-- Copyright 2023 EPFL
+-- Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+-- SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+--
+-- Author: Simone Machetti - simone.machetti@epfl.ch
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -114,7 +99,7 @@ begin
   begin
     if(s00_axi_aclk = '1' and s00_axi_aclk 'event) then
       if(s00_axi_aresetn = '0') then
-        curr_addr <= (others => '0');
+        curr_addr  <= (others => '0');
         curr_wdata <= (others => '0');
         curr_rdata <= (others => '0');
       else
