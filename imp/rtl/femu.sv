@@ -271,6 +271,8 @@ module femu
 
   obi_req_t obi_req;
   obi_resp_t obi_resp;
+  
+  logic gpio_reset;
 
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
@@ -414,7 +416,7 @@ module femu
   logic [31:0] exit_value;
   wire         rst_n;
 
-  assign rst_n   = !rst_i;
+  assign rst_n   = !gpio_reset;
   assign rst_led = rst_n;
 
   assign execute_from_flash_in_x = 1'b0;
@@ -797,6 +799,8 @@ module femu
     .gpio_jtag_trst_ni(jtag_trst_nin_x),
     .gpio_jtag_tdi_i(jtag_tdi_in_x),
     .gpio_jtag_tdo_o(jtag_tdo_out_x),
+    
+    .gpio_reset_i(gpio_reset),
 
     .X_HEEP_CLK(clk_in_x),
     .X_HEEP_RSTN(rst_ngen),
