@@ -273,6 +273,8 @@ module femu
   obi_resp_t obi_resp;
 
   logic gpio_reset;
+  logic gpio_execute_from_flash;
+  logic gpio_boot_select;
 
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
@@ -288,8 +290,8 @@ ${pad.internal_signals}
   assign rst_n   = !gpio_reset;
   assign rst_led = rst_n;
 
-  assign execute_from_flash_in_x = 1'b0;
-  assign boot_select_in_x = 1'b0;
+  assign execute_from_flash_in_x = gpio_execute_from_flash;
+  assign boot_select_in_x = gpio_boot_select;
 
   xilinx_clk_wizard_wrapper xilinx_clk_wizard_wrapper_i (
     .clk_125MHz(clk_in),
@@ -430,7 +432,9 @@ ${pad.core_v_mini_mcu_bonding}
     .gpio_jtag_tdo_o(jtag_tdo_out_x),
 
     .gpio_reset_i(gpio_reset),
-
+    .gpio_boot_select_i(gpio_boot_select),
+    .gpio_execute_from_flash_i(gpio_execute_from_flash),
+    
     .X_HEEP_CLK(clk_in_x),
     .X_HEEP_RSTN(rst_ngen),
 

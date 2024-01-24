@@ -13,7 +13,7 @@ create_bd_design "processing_system"
 # Add Zynq Processing System
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {6} CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP1 {1}] [get_bd_cells processing_system7_0]
+set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {8} CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP1 {1}] [get_bd_cells processing_system7_0]
 
 # Add AXI Interconnect
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0
@@ -28,8 +28,8 @@ set_property -dict [list CONFIG.CONST_WIDTH {1} CONFIG.CONST_VAL {0b1}] [get_bd_
 
 # Add Concatenation
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0
-set_property -dict [list CONFIG.IN0_WIDTH.VALUE_SRC USER CONFIG.IN1_WIDTH.VALUE_SRC USER CONFIG.IN2_WIDTH.VALUE_SRC USER CONFIG.IN3_WIDTH.VALUE_SRC USER] [get_bd_cells xlconcat_0]
-set_property -dict [list CONFIG.NUM_PORTS {4} CONFIG.IN0_WIDTH {2} CONFIG.IN2_WIDTH {2}] [get_bd_cells xlconcat_0]
+set_property -dict [list CONFIG.IN0_WIDTH.VALUE_SRC USER CONFIG.IN1_WIDTH.VALUE_SRC USER CONFIG.IN2_WIDTH.VALUE_SRC USER CONFIG.IN3_WIDTH.VALUE_SRC USER CONFIG.IN4_WIDTH.VALUE_SRC USER] [get_bd_cells xlconcat_0]
+set_property -dict [list CONFIG.NUM_PORTS {5} CONFIG.IN0_WIDTH {2} CONFIG.IN2_WIDTH {2} CONFIG.IN4_WIDTH {2}] [get_bd_cells xlconcat_0]
 
 # Add Slices
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0
@@ -37,11 +37,15 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_1
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_2
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_3
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_4
-set_property -dict [list CONFIG.DIN_TO {3} CONFIG.DIN_FROM {3} CONFIG.DIN_WIDTH {6} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_0]
-set_property -dict [list CONFIG.DIN_TO {4} CONFIG.DIN_FROM {4} CONFIG.DIN_WIDTH {6} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_1]
-set_property -dict [list CONFIG.DIN_TO {1} CONFIG.DIN_FROM {1} CONFIG.DIN_WIDTH {6} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_2]
-set_property -dict [list CONFIG.DIN_TO {0} CONFIG.DIN_FROM {0} CONFIG.DIN_WIDTH {6} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_3]
-set_property -dict [list CONFIG.DIN_TO {5} CONFIG.DIN_FROM {5} CONFIG.DIN_WIDTH {6} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_4]
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_5
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_6
+set_property -dict [list CONFIG.DIN_TO {3} CONFIG.DIN_FROM {3} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_0]
+set_property -dict [list CONFIG.DIN_TO {4} CONFIG.DIN_FROM {4} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_1]
+set_property -dict [list CONFIG.DIN_TO {1} CONFIG.DIN_FROM {1} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_2]
+set_property -dict [list CONFIG.DIN_TO {0} CONFIG.DIN_FROM {0} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_3]
+set_property -dict [list CONFIG.DIN_TO {5} CONFIG.DIN_FROM {5} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_4]
+set_property -dict [list CONFIG.DIN_TO {6} CONFIG.DIN_FROM {6} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_5]
+set_property -dict [list CONFIG.DIN_TO {7} CONFIG.DIN_FROM {7} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_6]
 
 # Create port gpio_jtag_tdo_o
 make_bd_pins_external [get_bd_pins xlconcat_0/In1]
@@ -52,6 +56,7 @@ connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins xlconcat_0/In0]
 connect_bd_net [get_bd_pins xlconcat_0/In2] [get_bd_pins xlconstant_0/dout]
 connect_bd_net [get_bd_pins xlconcat_0/dout] [get_bd_pins processing_system7_0/GPIO_I]
 connect_bd_net [get_bd_pins xlconstant_1/dout] [get_bd_pins xlconcat_0/In3]
+connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins xlconcat_0/In4]
 
 # Create port gpio_jtag_tdi_i
 make_bd_pins_external [get_bd_pins xlslice_0/Dout]
@@ -73,12 +78,22 @@ set_property name gpio_jtag_trst_ni [get_bd_ports Dout_0]
 make_bd_pins_external [get_bd_pins xlslice_4/Dout]
 set_property name gpio_reset_i [get_bd_ports Dout_0]
 
+# Create port gpio_boot_select_i
+make_bd_pins_external [get_bd_pins xlslice_5/Dout]
+set_property name gpio_boot_select_i [get_bd_ports Dout_0]
+
+# Create port gpio_execute_from_flash_i
+make_bd_pins_external [get_bd_pins xlslice_6/Dout]
+set_property name gpio_execute_from_flash_i [get_bd_ports Dout_0]
+
 # Connect Slices
 connect_bd_net [get_bd_pins xlslice_0/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_1/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_2/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_3/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_4/Din] [get_bd_pins processing_system7_0/GPIO_O]
+connect_bd_net [get_bd_pins xlslice_5/Din] [get_bd_pins processing_system7_0/GPIO_O]
+connect_bd_net [get_bd_pins xlslice_6/Din] [get_bd_pins processing_system7_0/GPIO_O]
 
 # Create port UART_TX
 make_bd_pins_external  [get_bd_pins processing_system7_0/UART1_TX]
