@@ -266,6 +266,46 @@ module femu
   logic [1:0] AXI_S_PERF_CNT_rresp_sig;
   logic AXI_S_PERF_CNT_rvalid_sig;
 
+  logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
+  logic [2:0] AXI_S_R_OBI_awprot_sig;
+  logic AXI_S_R_OBI_awready_sig;
+  logic AXI_S_R_OBI_awvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_R_OBI_wdata_sig;
+  logic AXI_S_R_OBI_wready_sig;
+  logic [(AXI_DATA_WIDTH / 8)-1 : 0] AXI_S_R_OBI_wstrb_sig;
+  logic AXI_S_R_OBI_wvalid_sig;
+  logic AXI_S_R_OBI_bready_sig;
+  logic [1:0] AXI_S_R_OBI_bresp_sig;
+  logic AXI_S_R_OBI_bvalid_sig;
+  logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_araddr_sig;
+  logic [2 : 0] AXI_S_R_OBI_arprot_sig;
+  logic AXI_S_R_OBI_arready_sig;
+  logic AXI_S_R_OBI_arvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_R_OBI_rdata_sig;
+  logic AXI_S_R_OBI_rready_sig;
+  logic [1:0] AXI_S_R_OBI_rresp_sig;
+  logic AXI_S_R_OBI_rvalid_sig;
+
+  logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_BAA_awaddr_sig;
+  logic [2:0] AXI_S_R_OBI_BAA_awprot_sig;
+  logic AXI_S_R_OBI_BAA_awready_sig;
+  logic AXI_S_R_OBI_BAA_awvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_R_OBI_BAA_wdata_sig;
+  logic AXI_S_R_OBI_BAA_wready_sig;
+  logic [(AXI_DATA_WIDTH / 8)-1 : 0] AXI_S_R_OBI_BAA_wstrb_sig;
+  logic AXI_S_R_OBI_BAA_wvalid_sig;
+  logic AXI_S_R_OBI_BAA_bready_sig;
+  logic [1:0] AXI_S_R_OBI_BAA_bresp_sig;
+  logic AXI_S_R_OBI_BAA_bvalid_sig;
+  logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_BAA_araddr_sig;
+  logic [2 : 0] AXI_S_R_OBI_BAA_arprot_sig;
+  logic AXI_S_R_OBI_BAA_arready_sig;
+  logic AXI_S_R_OBI_BAA_arvalid_sig;
+  logic [AXI_DATA_WIDTH - 1 : 0] AXI_S_R_OBI_BAA_rdata_sig;
+  logic AXI_S_R_OBI_BAA_rready_sig;
+  logic [1:0] AXI_S_R_OBI_BAA_rresp_sig;
+  logic AXI_S_R_OBI_BAA_rvalid_sig;
+
   reg_req_t pad_req;
   reg_rsp_t pad_resp;
 
@@ -275,6 +315,10 @@ module femu
   logic gpio_reset;
   logic gpio_execute_from_flash;
   logic gpio_boot_select;
+
+  obi_req_t r_obi_req;
+  obi_resp_t r_obi_resp;
+  logic [AXI_ADDR_WIDTH - 1:0] r_obi_req_addr_in_sig;
 
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
@@ -301,6 +345,7 @@ ${pad.internal_signals}
   if_xif #() ext_if ();
 
   core_v_mini_mcu #(
+.EXT_XBAR_NMASTER(1)
   ) core_v_mini_mcu_i (
     .rst_ni(rst_ngen),
 % for pad in pad_list:
@@ -313,8 +358,8 @@ ${pad.core_v_mini_mcu_bonding}
     .xif_mem_if(ext_if),
     .xif_mem_result_if(ext_if),
     .xif_result_if(ext_if),
-    .ext_xbar_master_req_i('0),
-    .ext_xbar_master_resp_o(),
+    .ext_xbar_master_req_i(r_obi_req),
+    .ext_xbar_master_resp_o(r_obi_resp),
     .ext_xbar_slave_req_o(obi_req),
     .ext_xbar_slave_resp_i(obi_resp),
     .ext_peripheral_slave_req_o(),
@@ -616,7 +661,47 @@ ${pad.core_v_mini_mcu_bonding}
     .AXI_S_OBI_wdata(AXI_S_OBI_wdata_sig),
     .AXI_S_OBI_wready(AXI_S_OBI_wready_sig),
     .AXI_S_OBI_wstrb(AXI_S_OBI_wstrb_sig),
-    .AXI_S_OBI_wvalid(AXI_S_OBI_wvalid_sig)
+    .AXI_S_OBI_wvalid(AXI_S_OBI_wvalid_sig),
+
+    .AXI_S_R_OBI_BAA_araddr(AXI_S_R_OBI_BAA_araddr_sig),
+    .AXI_S_R_OBI_BAA_arprot(AXI_S_R_OBI_BAA_arprot_sig),
+    .AXI_S_R_OBI_BAA_arready(AXI_S_R_OBI_BAA_arready_sig),
+    .AXI_S_R_OBI_BAA_arvalid(AXI_S_R_OBI_BAA_arvalid_sig),
+    .AXI_S_R_OBI_BAA_awaddr(AXI_S_R_OBI_BAA_awaddr_sig),
+    .AXI_S_R_OBI_BAA_awprot(AXI_S_R_OBI_BAA_awprot_sig),
+    .AXI_S_R_OBI_BAA_awready(AXI_S_R_OBI_BAA_awready_sig),
+    .AXI_S_R_OBI_BAA_awvalid(AXI_S_R_OBI_BAA_awvalid_sig),
+    .AXI_S_R_OBI_BAA_bready(AXI_S_R_OBI_BAA_bready_sig),
+    .AXI_S_R_OBI_BAA_bresp(AXI_S_R_OBI_BAA_bresp_sig),
+    .AXI_S_R_OBI_BAA_bvalid(AXI_S_R_OBI_BAA_bvalid_sig),
+    .AXI_S_R_OBI_BAA_rdata(AXI_S_R_OBI_BAA_rdata_sig),
+    .AXI_S_R_OBI_BAA_rready(AXI_S_R_OBI_BAA_rready_sig),
+    .AXI_S_R_OBI_BAA_rresp(AXI_S_R_OBI_BAA_rresp_sig),
+    .AXI_S_R_OBI_BAA_rvalid(AXI_S_R_OBI_BAA_rvalid_sig),
+    .AXI_S_R_OBI_BAA_wdata(AXI_S_R_OBI_BAA_wdata_sig),
+    .AXI_S_R_OBI_BAA_wready(AXI_S_R_OBI_BAA_wready_sig),
+    .AXI_S_R_OBI_BAA_wstrb(AXI_S_R_OBI_BAA_wstrb_sig),
+    .AXI_S_R_OBI_BAA_wvalid(AXI_S_R_OBI_BAA_wvalid_sig),
+
+    .AXI_S_R_OBI_araddr(AXI_S_R_OBI_araddr_sig),
+    .AXI_S_R_OBI_arprot(AXI_S_R_OBI_arprot_sig),
+    .AXI_S_R_OBI_arready(AXI_S_R_OBI_arready_sig),
+    .AXI_S_R_OBI_arvalid(AXI_S_R_OBI_arvalid_sig),
+    .AXI_S_R_OBI_awaddr(AXI_S_R_OBI_awaddr_sig),
+    .AXI_S_R_OBI_awprot(AXI_S_R_OBI_awprot_sig),
+    .AXI_S_R_OBI_awready(AXI_S_R_OBI_awready_sig),
+    .AXI_S_R_OBI_awvalid(AXI_S_R_OBI_awvalid_sig),
+    .AXI_S_R_OBI_bready(AXI_S_R_OBI_bready_sig),
+    .AXI_S_R_OBI_bresp(AXI_S_R_OBI_bresp_sig),
+    .AXI_S_R_OBI_bvalid(AXI_S_R_OBI_bvalid_sig),
+    .AXI_S_R_OBI_rdata(AXI_S_R_OBI_rdata_sig),
+    .AXI_S_R_OBI_rready(AXI_S_R_OBI_rready_sig),
+    .AXI_S_R_OBI_rresp(AXI_S_R_OBI_rresp_sig),
+    .AXI_S_R_OBI_rvalid(AXI_S_R_OBI_rvalid_sig),
+    .AXI_S_R_OBI_wdata(AXI_S_R_OBI_wdata_sig),
+    .AXI_S_R_OBI_wready(AXI_S_R_OBI_wready_sig),
+    .AXI_S_R_OBI_wstrb(AXI_S_R_OBI_wstrb_sig),
+    .AXI_S_R_OBI_wvalid(AXI_S_R_OBI_wvalid_sig)
   );
 
   performance_counters #(
@@ -944,6 +1029,83 @@ ${pad.core_v_mini_mcu_bonding}
     .r_user_i('0),
     .r_valid_i(AXI_M_OBI_rvalid_sig),
     .r_ready_o(AXI_M_OBI_rready_sig)
+  );
+
+  axi_address_adder #(
+    .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
+    .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
+  ) axi_address_adder_virtual_r_obi_i (
+    .axi_master_awaddr_in('0),
+    .axi_master_araddr_in(32'h0000FFFF & r_obi_req_addr_in_sig),
+
+    .axi_master_araddr_out(r_obi_req.addr),
+    .axi_master_awaddr_out(),
+
+    .S_AXI_ACLK(clk_in_x),
+    .S_AXI_ARESETN(rst_ngen),
+
+    .S_AXI_AWADDR (AXI_S_R_OBI_BAA_awaddr_sig),
+    .S_AXI_AWPROT (AXI_S_R_OBI_BAA_awprot_sig),
+    .S_AXI_AWVALID(AXI_S_R_OBI_BAA_awvalid_sig),
+    .S_AXI_AWREADY(AXI_S_R_OBI_BAA_awready_sig),
+    .S_AXI_WDATA  (AXI_S_R_OBI_BAA_wdata_sig),
+    .S_AXI_WSTRB  (AXI_S_R_OBI_BAA_wstrb_sig),
+    .S_AXI_WVALID (AXI_S_R_OBI_BAA_wvalid_sig),
+    .S_AXI_WREADY (AXI_S_R_OBI_BAA_wready_sig),
+    .S_AXI_BRESP  (AXI_S_R_OBI_BAA_bresp_sig),
+    .S_AXI_BVALID (AXI_S_R_OBI_BAA_bvalid_sig),
+    .S_AXI_BREADY (AXI_S_R_OBI_BAA_bready_sig),
+    .S_AXI_ARADDR (AXI_S_R_OBI_BAA_araddr_sig),
+    .S_AXI_ARPROT (AXI_S_R_OBI_BAA_arprot_sig),
+    .S_AXI_ARVALID(AXI_S_R_OBI_BAA_arvalid_sig),
+    .S_AXI_ARREADY(AXI_S_R_OBI_BAA_arready_sig),
+    .S_AXI_RDATA  (AXI_S_R_OBI_BAA_rdata_sig),
+    .S_AXI_RRESP  (AXI_S_R_OBI_BAA_rresp_sig),
+    .S_AXI_RVALID (AXI_S_R_OBI_BAA_rvalid_sig),
+    .S_AXI_RREADY (AXI_S_R_OBI_BAA_rready_sig)
+  );
+
+  axi2obi #(
+    //.WordSize(),
+    //.AddrSize(),
+    .C_S00_AXI_DATA_WIDTH(AXI_DATA_WIDTH),
+    .C_S00_AXI_ADDR_WIDTH(AXI_ADDR_WIDTH)
+  ) axi2obi_bridge_virtual_r_obi_i (
+    .gnt_i(r_obi_resp.gnt),
+    .rvalid_i(r_obi_resp.rvalid),
+    .we_o(r_obi_req.we),
+    .be_o(r_obi_req.be),
+    .addr_o(r_obi_req_addr_in_sig),
+    .wdata_o(r_obi_req.wdata),
+    .rdata_i(r_obi_resp.rdata),
+    .req_o(r_obi_req.req),
+
+    .s00_axi_aclk(clk_in_x),
+    .s00_axi_aresetn(rst_ngen),
+
+    .s00_axi_araddr(AXI_S_R_OBI_araddr_sig),
+    .s00_axi_arvalid(AXI_S_R_OBI_arvalid_sig),
+    .s00_axi_arready(AXI_S_R_OBI_arready_sig),
+    .s00_axi_arprot(AXI_S_R_OBI_arprot_sig),
+
+    .s00_axi_rdata(AXI_S_R_OBI_rdata_sig),
+    .s00_axi_rresp(AXI_S_R_OBI_rresp_sig),
+    .s00_axi_rvalid(AXI_S_R_OBI_rvalid_sig),
+    .s00_axi_rready(AXI_S_R_OBI_rready_sig),
+
+    .s00_axi_awaddr(AXI_S_R_OBI_awaddr_sig),
+    .s00_axi_awvalid(AXI_S_R_OBI_awvalid_sig),
+    .s00_axi_awready(AXI_S_R_OBI_awready_sig),
+    .s00_axi_awprot(AXI_S_R_OBI_awprot_sig),
+
+    .s00_axi_wdata(AXI_S_R_OBI_wdata_sig),
+    .s00_axi_wvalid(AXI_S_R_OBI_wvalid_sig),
+    .s00_axi_wready(AXI_S_R_OBI_wready_sig),
+    .s00_axi_wstrb(AXI_S_R_OBI_wstrb_sig),
+
+    .s00_axi_bresp(AXI_S_R_OBI_bresp_sig),
+    .s00_axi_bvalid(AXI_S_R_OBI_bvalid_sig),
+    .s00_axi_bready(AXI_S_R_OBI_bready_sig)
   );
 
   pad_ring pad_ring_i (

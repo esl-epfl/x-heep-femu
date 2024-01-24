@@ -85,6 +85,7 @@ filesets:
     - rtl/axi_address_fix_adder.v: {file_type: verilogSource}
     - rtl/performance_counters.v: {file_type: verilogSource}
     - rtl/femu.sv: {file_type: systemVerilogSource}
+    - rtl/axi2obi.vhdl: {file_type: vhdlSource}
     - pinout/pin_assign.xdc: {file_type: xdc}
 
 parameters:
