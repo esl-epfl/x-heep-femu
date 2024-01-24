@@ -69,13 +69,11 @@ connect_bd_net [get_bd_pins xlslice_1/Din] [get_bd_pins processing_system7_0/GPI
 connect_bd_net [get_bd_pins xlslice_2/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_3/Din] [get_bd_pins processing_system7_0/GPIO_O]
 
-# Create port UART_TX
-make_bd_pins_external  [get_bd_pins processing_system7_0/UART1_TX]
-set_property name UART_TX [get_bd_ports UART1_TX_0]
-
 # Create port UART_RX
-make_bd_pins_external  [get_bd_pins processing_system7_0/UART1_RX]
-set_property name UART_RX [get_bd_ports UART1_RX_0]
+create_bd_port -dir I -type data UART_RX
+
+# Create port UART_TX
+create_bd_port -dir O -type data UART_TX
 
 # Create port AXI_M_FLASH
 make_bd_intf_pins_external [get_bd_intf_pins axi_interconnect_0/S00_AXI]
@@ -145,6 +143,22 @@ set_property CONFIG.SINGLE_PORT_BRAM {1} [get_bd_cells axi_bram_ctrl_0]
 # Connect Block RAM controller
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA] [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA]
 connect_bd_intf_net [get_bd_intf_pins axi_bram_ctrl_0/S_AXI] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/M02_AXI]
+
+# Connect UART_RX
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_0
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_0/src_clk]
+connect_bd_net [get_bd_pins xpm_cdc_gen_0/dest_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports UART_RX] [get_bd_pins xpm_cdc_gen_0/src_in]
+connect_bd_net [get_bd_pins xpm_cdc_gen_0/dest_out] [get_bd_pins processing_system7_0/UART1_RX]
+
+# Connect UART_TX
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_1
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_1]
+connect_bd_net [get_bd_pins xpm_cdc_gen_1/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_1/dest_clk]
+connect_bd_net [get_bd_pins xpm_cdc_gen_1/src_in] [get_bd_pins processing_system7_0/UART1_TX]
+connect_bd_net [get_bd_ports UART_TX] [get_bd_pins xpm_cdc_gen_1/dest_out]
 
 # Connect clock and reset
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk]

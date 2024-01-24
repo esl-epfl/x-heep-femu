@@ -266,7 +266,7 @@ module femu
   logic [1:0] AXI_S_PERF_CNT_rresp_sig;
   logic AXI_S_PERF_CNT_rvalid_sig;
 
-logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
+  logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
   logic [2:0] AXI_S_R_OBI_awprot_sig;
   logic AXI_S_R_OBI_awready_sig;
   logic AXI_S_R_OBI_awvalid_sig;
@@ -306,7 +306,6 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
   logic [1:0] AXI_S_R_OBI_BAA_rresp_sig;
   logic AXI_S_R_OBI_BAA_rvalid_sig;
 
-
   reg_req_t pad_req;
   reg_rsp_t pad_resp;
 
@@ -316,7 +315,6 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
   obi_req_t r_obi_req;
   obi_resp_t r_obi_resp;
   logic [AXI_ADDR_WIDTH - 1:0] r_obi_req_addr_in_sig;
-
 
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][7:0] pad_attributes;
   logic [core_v_mini_mcu_pkg::NUM_PAD-1:0][3:0] pad_muxes;
@@ -1396,7 +1394,6 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
     .r_ready_o(AXI_M_OBI_rready_sig)
   );
 
-
   axi_address_adder #(
     .AXI_ADDR_WIDTH(AXI_ADDR_WIDTH),
     .C_S_AXI_DATA_WIDTH(AXI_DATA_WIDTH)
@@ -1473,7 +1470,6 @@ logic [AXI_ADDR_WIDTH - 1 : 0] AXI_S_R_OBI_awaddr_sig;
     .s00_axi_bvalid(AXI_S_R_OBI_bvalid_sig),
     .s00_axi_bready(AXI_S_R_OBI_bready_sig)
   );
-
 
   pad_ring pad_ring_i (
     .clk_io(clk_i),
