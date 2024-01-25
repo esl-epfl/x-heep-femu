@@ -5,6 +5,7 @@
 *.dis
 *.map
 *.do
+*.jou
 
 imp/build/
 imp/.Xil
