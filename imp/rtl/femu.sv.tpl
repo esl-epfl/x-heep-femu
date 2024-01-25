@@ -12,7 +12,6 @@ module femu
 #(
 ) (
   inout logic clk_in,
-  inout logic rst_i,
 
   output logic rst_led,
 
@@ -476,10 +475,10 @@ ${pad.core_v_mini_mcu_bonding}
     .gpio_jtag_tdi_i(jtag_tdi_in_x),
     .gpio_jtag_tdo_o(jtag_tdo_out_x),
 
-    .gpio_reset_i(gpio_reset),
-    .gpio_boot_select_i(gpio_boot_select),
-    .gpio_execute_from_flash_i(gpio_execute_from_flash),
-    
+    .gpio_reset_o(gpio_reset),
+    .gpio_boot_select_o(gpio_boot_select),
+    .gpio_execute_from_flash_o(gpio_execute_from_flash),
+
     .X_HEEP_CLK(clk_in_x),
     .X_HEEP_RSTN(rst_ngen),
 
