@@ -74,17 +74,17 @@ set_property name gpio_jtag_tms_i [get_bd_ports Dout_0]
 make_bd_pins_external [get_bd_pins xlslice_3/Dout]
 set_property name gpio_jtag_trst_ni [get_bd_ports Dout_0]
 
-# Create port gpio_reset_i
+# Create port gpio_reset_o
 make_bd_pins_external [get_bd_pins xlslice_4/Dout]
-set_property name gpio_reset_i [get_bd_ports Dout_0]
+set_property name gpio_reset_o [get_bd_ports Dout_0]
 
-# Create port gpio_boot_select_i
+# Create port gpio_boot_select_o
 make_bd_pins_external [get_bd_pins xlslice_5/Dout]
-set_property name gpio_boot_select_i [get_bd_ports Dout_0]
+set_property name gpio_boot_select_o [get_bd_ports Dout_0]
 
-# Create port gpio_execute_from_flash_i
+# Create port gpio_execute_from_flash_o
 make_bd_pins_external [get_bd_pins xlslice_6/Dout]
-set_property name gpio_execute_from_flash_i [get_bd_ports Dout_0]
+set_property name gpio_execute_from_flash_o [get_bd_ports Dout_0]
 
 # Connect Slices
 connect_bd_net [get_bd_pins xlslice_0/Din] [get_bd_pins processing_system7_0/GPIO_O]
