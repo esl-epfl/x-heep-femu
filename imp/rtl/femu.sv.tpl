@@ -393,7 +393,7 @@ ${pad.core_v_mini_mcu_bonding}
   assign gpio_8_in_x = GPIO_out_signal[6];
   assign gpio_9_in_x = GPIO_out_signal[7];
   assign gpio_10_in_x = GPIO_out_signal[8];
-  assign gpio_12_in_x = GPIO_out_signal[9];
+  assign gpio_11_in_x = GPIO_out_signal[9];
   assign gpio_12_in_x = GPIO_out_signal[10];
   assign gpio_13_in_x = GPIO_out_signal[11];
   assign gpio_14_in_x = GPIO_out_signal[12];
