@@ -15,8 +15,6 @@ module femu
 
   output logic rst_led,
 
-  inout logic [31:2] gpio_io,
-
   inout logic spi2_sck_io,
   inout logic spi2_cs_0_io,
   inout logic spi2_cs_1_io,
@@ -315,6 +313,9 @@ module femu
   logic gpio_execute_from_flash;
   logic gpio_boot_select;
 
+  logic [29:0] GPIO_in_signal;
+  logic [29:0] GPIO_out_signal;
+
   obi_req_t r_obi_req;
   obi_resp_t r_obi_resp;
   logic [AXI_ADDR_WIDTH - 1:0] r_obi_req_addr_in_sig;
@@ -383,67 +384,67 @@ ${pad.core_v_mini_mcu_bonding}
     .memory_subsystem_clkgate_en_o(memory_subsystem_clkgate_en)
   );
 
-  logic gpio_2_io;
-  logic gpio_3_io;
-  logic gpio_4_io;
-  logic gpio_5_io;
-  logic gpio_6_io;
-  logic gpio_7_io;
-  logic gpio_8_io;
-  logic gpio_9_io;
-  logic gpio_10_io;
-  logic gpio_11_io;
-  logic gpio_12_io;
-  logic gpio_13_io;
-  logic gpio_14_io;
-  logic gpio_15_io;
-  logic gpio_16_io;
-  logic gpio_17_io;
-  logic gpio_18_io;
-  logic gpio_19_io;
-  logic gpio_20_io;
-  logic gpio_21_io;
-  logic gpio_22_io;
-  logic gpio_23_io;
-  logic gpio_24_io;
-  logic gpio_25_io;
-  logic gpio_26_io;
-  logic gpio_27_io;
-  logic gpio_28_io;
-  logic gpio_29_io;
-  logic gpio_30_io;
-  logic gpio_31_io;
+  assign gpio_2_in_x = GPIO_out_signal[0];
+  assign gpio_3_in_x = GPIO_out_signal[1];
+  assign gpio_4_in_x = GPIO_out_signal[2];
+  assign gpio_5_in_x = GPIO_out_signal[3];
+  assign gpio_6_in_x = GPIO_out_signal[4];
+  assign gpio_7_in_x = GPIO_out_signal[5];
+  assign gpio_8_in_x = GPIO_out_signal[6];
+  assign gpio_9_in_x = GPIO_out_signal[7];
+  assign gpio_10_in_x = GPIO_out_signal[8];
+  assign gpio_12_in_x = GPIO_out_signal[9];
+  assign gpio_12_in_x = GPIO_out_signal[10];
+  assign gpio_13_in_x = GPIO_out_signal[11];
+  assign gpio_14_in_x = GPIO_out_signal[12];
+  assign gpio_15_in_x = GPIO_out_signal[13];
+  assign gpio_16_in_x = GPIO_out_signal[14];
+  assign gpio_17_in_x = GPIO_out_signal[15];
+  assign gpio_18_in_x = GPIO_out_signal[16];
+  assign gpio_19_in_x = GPIO_out_signal[17];
+  assign gpio_20_in_x = GPIO_out_signal[18];
+  assign gpio_21_in_x = GPIO_out_signal[19];
+  assign gpio_22_in_x = GPIO_out_signal[20];
+  assign gpio_23_in_x = GPIO_out_signal[21];
+  assign gpio_24_in_x = GPIO_out_signal[22];
+  assign gpio_25_in_x = GPIO_out_signal[23];
+  assign gpio_26_in_x = GPIO_out_signal[24];
+  assign gpio_27_in_x = GPIO_out_signal[25];
+  assign gpio_28_in_x = GPIO_out_signal[26];
+  assign gpio_29_in_x = GPIO_out_signal[27];
+  assign gpio_30_in_x = GPIO_out_signal[28];
+  assign gpio_31_in_x = GPIO_out_signal[29];
 
-  assign gpio_io[2] = gpio_2_io;
-  assign gpio_io[3] = gpio_3_io;
-  assign gpio_io[4] = gpio_4_io;
-  assign gpio_io[5] = gpio_5_io;
-  assign gpio_io[6] = gpio_6_io;
-  assign gpio_io[7] = gpio_7_io;
-  assign gpio_io[8] = gpio_8_io;
-  assign gpio_io[9] = gpio_9_io;
-  assign gpio_io[10] = gpio_10_io;
-  assign gpio_io[11] = gpio_11_io;
-  assign gpio_io[12] = gpio_12_io;
-  assign gpio_io[13] = gpio_13_io;
-  assign gpio_io[14] = gpio_14_io;
-  assign gpio_io[15] = gpio_15_io;
-  assign gpio_io[16] = gpio_16_io;
-  assign gpio_io[17] = gpio_17_io;
-  assign gpio_io[18] = gpio_18_io;
-  assign gpio_io[19] = gpio_19_io;
-  assign gpio_io[20] = gpio_20_io;
-  assign gpio_io[21] = gpio_21_io;
-  assign gpio_io[22] = gpio_22_io;
-  assign gpio_io[23] = gpio_23_io;
-  assign gpio_io[24] = gpio_24_io;
-  assign gpio_io[25] = gpio_25_io;
-  assign gpio_io[26] = gpio_26_io;
-  assign gpio_io[27] = gpio_27_io;
-  assign gpio_io[28] = gpio_28_io;
-  assign gpio_io[29] = gpio_29_io;
-  assign gpio_io[30] = gpio_30_io;
-  assign gpio_io[31] = gpio_31_io;
+  assign GPIO_in_signal[0] = gpio_2_out_x;
+  assign GPIO_in_signal[1] = gpio_3_out_x;
+  assign GPIO_in_signal[2] = gpio_4_out_x;
+  assign GPIO_in_signal[3] = gpio_5_out_x;
+  assign GPIO_in_signal[4] = gpio_6_out_x;
+  assign GPIO_in_signal[5] = gpio_7_out_x;
+  assign GPIO_in_signal[6] = gpio_8_out_x;
+  assign GPIO_in_signal[7] = gpio_9_out_x;
+  assign GPIO_in_signal[8] = gpio_10_out_x;
+  assign GPIO_in_signal[9] = gpio_11_out_x;
+  assign GPIO_in_signal[10] = gpio_12_out_x;
+  assign GPIO_in_signal[11] = gpio_13_out_x;
+  assign GPIO_in_signal[12] = gpio_14_out_x;
+  assign GPIO_in_signal[13] = gpio_15_out_x;
+  assign GPIO_in_signal[14] = gpio_16_out_x;
+  assign GPIO_in_signal[15] = gpio_17_out_x;
+  assign GPIO_in_signal[16] = gpio_18_out_x;
+  assign GPIO_in_signal[17] = gpio_19_out_x;
+  assign GPIO_in_signal[18] = gpio_20_out_x;
+  assign GPIO_in_signal[19] = gpio_21_out_x;
+  assign GPIO_in_signal[20] = gpio_22_out_x;
+  assign GPIO_in_signal[21] = gpio_23_out_x;
+  assign GPIO_in_signal[22] = gpio_24_out_x;
+  assign GPIO_in_signal[23] = gpio_25_out_x;
+  assign GPIO_in_signal[24] = gpio_26_out_x;
+  assign GPIO_in_signal[25] = gpio_27_out_x;
+  assign GPIO_in_signal[26] = gpio_28_out_x;
+  assign GPIO_in_signal[27] = gpio_29_out_x;
+  assign GPIO_in_signal[28] = gpio_30_out_x;
+  assign GPIO_in_signal[29] = gpio_31_out_x;
 
   processing_system_wrapper processing_system_wrapper_i (
     .DDR_addr(DDR_addr),
@@ -478,6 +479,9 @@ ${pad.core_v_mini_mcu_bonding}
     .gpio_reset_o(gpio_reset),
     .gpio_boot_select_o(gpio_boot_select),
     .gpio_execute_from_flash_o(gpio_execute_from_flash),
+
+    .GPIO_in(GPIO_in_signal),
+    .GPIO_out(GPIO_out_signal),
 
     .X_HEEP_CLK(clk_in_x),
     .X_HEEP_RSTN(rst_ngen),
