@@ -12,7 +12,6 @@ module femu
 #(
 ) (
   inout logic clk_in,
-  inout logic rst_i,
 
   output logic rst_led,
 
