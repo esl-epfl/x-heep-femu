@@ -13,7 +13,7 @@ create_bd_design "processing_system"
 # Add Zynq Processing System
 create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {make_external "FIXED_IO, DDR" apply_board_preset "1" Master "Disable" Slave "Disable" }  [get_bd_cells processing_system7_0]
-set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {8} CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP1 {1}] [get_bd_cells processing_system7_0]
+set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {20} CONFIG.PCW_USE_S_AXI_HP0 {1} CONFIG.PCW_QSPI_GRP_SINGLE_SS_ENABLE {1} CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART0_PERIPHERAL_ENABLE {0} CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} CONFIG.PCW_UART1_UART1_IO {EMIO} CONFIG.PCW_USB0_PERIPHERAL_ENABLE {0} CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {0} CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1} CONFIG.PCW_GPIO_EMIO_GPIO_IO {38} CONFIG.PCW_USE_M_AXI_GP1 {1} CONFIG.PCW_USE_S_AXI_HP1 {1}] [get_bd_cells processing_system7_0]
 
 # Add AXI Interconnect
 create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0
@@ -24,12 +24,12 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0
 set_property -dict [list CONFIG.CONST_WIDTH {2} CONFIG.CONST_VAL {0b11}] [get_bd_cells xlconstant_0]
 
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_1
-set_property -dict [list CONFIG.CONST_WIDTH {1} CONFIG.CONST_VAL {0b1}] [get_bd_cells xlconstant_1]
+set_property -dict [list CONFIG.CONST_WIDTH {3} CONFIG.CONST_VAL {0b111}] [get_bd_cells xlconstant_1]
 
 # Add Concatenation
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0
 set_property -dict [list CONFIG.IN0_WIDTH.VALUE_SRC USER CONFIG.IN1_WIDTH.VALUE_SRC USER CONFIG.IN2_WIDTH.VALUE_SRC USER CONFIG.IN3_WIDTH.VALUE_SRC USER CONFIG.IN4_WIDTH.VALUE_SRC USER] [get_bd_cells xlconcat_0]
-set_property -dict [list CONFIG.NUM_PORTS {5} CONFIG.IN0_WIDTH {2} CONFIG.IN2_WIDTH {2} CONFIG.IN4_WIDTH {2}] [get_bd_cells xlconcat_0]
+set_property -dict [list CONFIG.NUM_PORTS {5} CONFIG.IN0_WIDTH {2} CONFIG.IN2_WIDTH {2} CONFIG.IN3_WIDTH {3} CONFIG.IN4_WIDTH {30}] [get_bd_cells xlconcat_0]
 
 # Add Slices
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_0
@@ -39,52 +39,51 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_3
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_4
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_5
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_6
-set_property -dict [list CONFIG.DIN_TO {3} CONFIG.DIN_FROM {3} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_0]
-set_property -dict [list CONFIG.DIN_TO {4} CONFIG.DIN_FROM {4} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_1]
-set_property -dict [list CONFIG.DIN_TO {1} CONFIG.DIN_FROM {1} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_2]
-set_property -dict [list CONFIG.DIN_TO {0} CONFIG.DIN_FROM {0} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_3]
-set_property -dict [list CONFIG.DIN_TO {5} CONFIG.DIN_FROM {5} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_4]
-set_property -dict [list CONFIG.DIN_TO {6} CONFIG.DIN_FROM {6} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_5]
-set_property -dict [list CONFIG.DIN_TO {7} CONFIG.DIN_FROM {7} CONFIG.DIN_WIDTH {8} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_6]
+create_bd_cell -type ip -vlnv xilinx.com:ip:xlslice:1.0 xlslice_7
+set_property -dict [list CONFIG.DIN_TO {3} CONFIG.DIN_FROM {3} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_0]
+set_property -dict [list CONFIG.DIN_TO {4} CONFIG.DIN_FROM {4} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_1]
+set_property -dict [list CONFIG.DIN_TO {1} CONFIG.DIN_FROM {1} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_2]
+set_property -dict [list CONFIG.DIN_TO {0} CONFIG.DIN_FROM {0} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_3]
+set_property -dict [list CONFIG.DIN_TO {5} CONFIG.DIN_FROM {5} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_4]
+set_property -dict [list CONFIG.DIN_TO {6} CONFIG.DIN_FROM {6} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_5]
+set_property -dict [list CONFIG.DIN_TO {7} CONFIG.DIN_FROM {7} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {1}] [get_bd_cells xlslice_6]
+set_property -dict [list CONFIG.DIN_TO {8} CONFIG.DIN_FROM {37} CONFIG.DIN_WIDTH {38} CONFIG.DOUT_WIDTH {30}] [get_bd_cells xlslice_7]
 
 # Create port gpio_jtag_tdo_o
-make_bd_pins_external [get_bd_pins xlconcat_0/In1]
-set_property name gpio_jtag_tdo_o [get_bd_ports In1_0]
+create_bd_port -dir I -type data gpio_jtag_tdo_o
 
 # Connect Constants and Concatenation
 connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins xlconcat_0/In0]
 connect_bd_net [get_bd_pins xlconcat_0/In2] [get_bd_pins xlconstant_0/dout]
 connect_bd_net [get_bd_pins xlconcat_0/dout] [get_bd_pins processing_system7_0/GPIO_I]
 connect_bd_net [get_bd_pins xlconstant_1/dout] [get_bd_pins xlconcat_0/In3]
-connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins xlconcat_0/In4]
 
 # Create port gpio_jtag_tdi_i
-make_bd_pins_external [get_bd_pins xlslice_0/Dout]
-set_property name gpio_jtag_tdi_i [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_jtag_tdi_i
 
 # Create port gpio_jtag_tck_i
-make_bd_pins_external [get_bd_pins xlslice_1/Dout]
-set_property name gpio_jtag_tck_i [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_jtag_tck_i
 
 # Create port gpio_jtag_tms_i
-make_bd_pins_external [get_bd_pins xlslice_2/Dout]
-set_property name gpio_jtag_tms_i [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_jtag_tms_i
 
 # Create port gpio_jtag_trst_ni
-make_bd_pins_external [get_bd_pins xlslice_3/Dout]
-set_property name gpio_jtag_trst_ni [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_jtag_trst_ni
 
 # Create port gpio_reset_o
-make_bd_pins_external [get_bd_pins xlslice_4/Dout]
-set_property name gpio_reset_o [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_reset_o
 
 # Create port gpio_boot_select_o
-make_bd_pins_external [get_bd_pins xlslice_5/Dout]
-set_property name gpio_boot_select_o [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_boot_select_o
 
 # Create port gpio_execute_from_flash_o
-make_bd_pins_external [get_bd_pins xlslice_6/Dout]
-set_property name gpio_execute_from_flash_o [get_bd_ports Dout_0]
+create_bd_port -dir O -type data gpio_execute_from_flash_o
+
+# Create port GPIO_out
+create_bd_port -dir O -from 29 -to 0 -type data GPIO_out
+
+# Create port GPIO_in
+create_bd_port -dir I -from 29 -to 0 -type data GPIO_in
 
 # Connect Slices
 connect_bd_net [get_bd_pins xlslice_0/Din] [get_bd_pins processing_system7_0/GPIO_O]
@@ -94,6 +93,7 @@ connect_bd_net [get_bd_pins xlslice_3/Din] [get_bd_pins processing_system7_0/GPI
 connect_bd_net [get_bd_pins xlslice_4/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_5/Din] [get_bd_pins processing_system7_0/GPIO_O]
 connect_bd_net [get_bd_pins xlslice_6/Din] [get_bd_pins processing_system7_0/GPIO_O]
+connect_bd_net [get_bd_pins xlslice_7/Din] [get_bd_pins processing_system7_0/GPIO_O]
 
 # Create port UART_RX
 create_bd_port -dir I -type data UART_RX
@@ -153,6 +153,8 @@ create_bd_port -dir I -type clk -freq_hz 20000000 X_HEEP_CLK
 create_bd_port -dir I -type rst X_HEEP_RSTN
 set_property CONFIG.ASSOCIATED_RESET {X_HEEP_RSTN} [get_bd_ports /X_HEEP_CLK]
 
+
+
 # Connect AXI Interconnect and Zynq Processing System
 connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP0] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S02_AXI]
 connect_bd_intf_net [get_bd_intf_pins processing_system7_0/M_AXI_GP1] -boundary_type upper [get_bd_intf_pins axi_interconnect_0/S04_AXI]
@@ -185,6 +187,86 @@ connect_bd_net [get_bd_pins xpm_cdc_gen_1/src_clk] [get_bd_pins processing_syste
 connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_1/dest_clk]
 connect_bd_net [get_bd_pins xpm_cdc_gen_1/src_in] [get_bd_pins processing_system7_0/UART1_TX]
 connect_bd_net [get_bd_ports UART_TX] [get_bd_pins xpm_cdc_gen_1/dest_out]
+
+# Connect GPIO_out
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_2
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_array_single} CONFIG.DEST_SYNC_FF {3} CONFIG.WIDTH {30} ] [get_bd_cells xpm_cdc_gen_2]
+connect_bd_net [get_bd_pins xpm_cdc_gen_2/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_2/dest_clk]
+connect_bd_net [get_bd_pins xlslice_7/Dout] [get_bd_pins xpm_cdc_gen_2/src_in]
+connect_bd_net [get_bd_ports GPIO_out] [get_bd_pins xpm_cdc_gen_2/dest_out]
+
+# Connect GPIO_in
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_3
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_array_single} CONFIG.DEST_SYNC_FF {3} CONFIG.WIDTH {30} ] [get_bd_cells xpm_cdc_gen_3]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_3/src_clk]
+connect_bd_net [get_bd_pins xpm_cdc_gen_3/dest_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports GPIO_in] [get_bd_pins xpm_cdc_gen_3/src_in]
+connect_bd_net [get_bd_pins xlconcat_0/In4] [get_bd_pins xpm_cdc_gen_3/dest_out]
+
+# Connect GPIO_reset_o
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_4
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_4]
+connect_bd_net [get_bd_pins xpm_cdc_gen_4/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_4/dest_clk]
+connect_bd_net [get_bd_pins xlslice_4/Dout] [get_bd_pins xpm_cdc_gen_4/src_in]
+connect_bd_net [get_bd_ports gpio_reset_o] [get_bd_pins xpm_cdc_gen_4/dest_out]
+
+# Connect GPIO_boot_select_o
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_5
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_5]
+connect_bd_net [get_bd_pins xpm_cdc_gen_5/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_5/dest_clk]
+connect_bd_net [get_bd_pins xlslice_5/Dout] [get_bd_pins xpm_cdc_gen_5/src_in]
+connect_bd_net [get_bd_ports gpio_boot_select_o] [get_bd_pins xpm_cdc_gen_5/dest_out]
+
+# Connect GPIO_execute_from_flash_o
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_6
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_6]
+connect_bd_net [get_bd_pins xpm_cdc_gen_6/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_6/dest_clk]
+connect_bd_net [get_bd_pins xlslice_6/Dout] [get_bd_pins xpm_cdc_gen_6/src_in]
+connect_bd_net [get_bd_ports gpio_execute_from_flash_o] [get_bd_pins xpm_cdc_gen_6/dest_out]
+
+# Connect GPIO_jtag_tdi_i
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_7
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_7]
+connect_bd_net [get_bd_pins xpm_cdc_gen_7/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_7/dest_clk]
+connect_bd_net [get_bd_pins xlslice_0/Dout] [get_bd_pins xpm_cdc_gen_7/src_in]
+connect_bd_net [get_bd_ports gpio_jtag_tdi_i] [get_bd_pins xpm_cdc_gen_7/dest_out]
+
+# Connect GPIO_jtag_tck_i
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_8
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_8]
+connect_bd_net [get_bd_pins xpm_cdc_gen_8/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_8/dest_clk]
+connect_bd_net [get_bd_pins xlslice_1/Dout] [get_bd_pins xpm_cdc_gen_8/src_in]
+connect_bd_net [get_bd_ports gpio_jtag_tck_i] [get_bd_pins xpm_cdc_gen_8/dest_out]
+
+# Connect GPIO_jtag_tms_i
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_9
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_9]
+connect_bd_net [get_bd_pins xpm_cdc_gen_9/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_9/dest_clk]
+connect_bd_net [get_bd_pins xlslice_2/Dout] [get_bd_pins xpm_cdc_gen_9/src_in]
+connect_bd_net [get_bd_ports gpio_jtag_tms_i] [get_bd_pins xpm_cdc_gen_9/dest_out]
+
+# Connect GPIO_jtag_trst_ni
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_10
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_10]
+connect_bd_net [get_bd_pins xpm_cdc_gen_10/src_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_10/dest_clk]
+connect_bd_net [get_bd_pins xlslice_3/Dout] [get_bd_pins xpm_cdc_gen_10/src_in]
+connect_bd_net [get_bd_ports gpio_jtag_trst_ni] [get_bd_pins xpm_cdc_gen_10/dest_out]
+
+# Connect GPIO_jtag_tdo_o
+create_bd_cell -type ip -vlnv xilinx.com:ip:xpm_cdc_gen:1.0 xpm_cdc_gen_11
+set_property -dict [list CONFIG.CDC_TYPE {xpm_cdc_single} CONFIG.DEST_SYNC_FF {3}] [get_bd_cells xpm_cdc_gen_11]
+connect_bd_net [get_bd_ports X_HEEP_CLK] [get_bd_pins xpm_cdc_gen_11/src_clk]
+connect_bd_net [get_bd_pins xpm_cdc_gen_11/dest_clk] [get_bd_pins processing_system7_0/FCLK_CLK0]
+connect_bd_net [get_bd_ports GPIO_jtag_tdo_o] [get_bd_pins xpm_cdc_gen_11/src_in]
+connect_bd_net [get_bd_pins xlconcat_0/In1] [get_bd_pins xpm_cdc_gen_11/dest_out]
 
 # Connect clock and reset
 apply_bd_automation -rule xilinx.com:bd_rule:clkrst -config { Clk {/processing_system7_0/FCLK_CLK0 (20 MHz)} Freq {100} Ref_Clk0 {} Ref_Clk1 {} Ref_Clk2 {}}  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk]

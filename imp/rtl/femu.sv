@@ -15,8 +15,6 @@ module femu
 
   output logic rst_led,
 
-  inout logic [31:2] gpio_io,
-
   inout logic spi2_sck_io,
   inout logic spi2_cs_0_io,
   inout logic spi2_cs_1_io,
@@ -314,6 +312,9 @@ module femu
   logic gpio_reset;
   logic gpio_execute_from_flash;
   logic gpio_boot_select;
+
+  logic [29:0] GPIO_in_signal;
+  logic [29:0] GPIO_out_signal;
 
   obi_req_t r_obi_req;
   obi_resp_t r_obi_resp;
@@ -754,67 +755,67 @@ module femu
     .memory_subsystem_clkgate_en_o(memory_subsystem_clkgate_en)
   );
 
-  logic gpio_2_io;
-  logic gpio_3_io;
-  logic gpio_4_io;
-  logic gpio_5_io;
-  logic gpio_6_io;
-  logic gpio_7_io;
-  logic gpio_8_io;
-  logic gpio_9_io;
-  logic gpio_10_io;
-  logic gpio_11_io;
-  logic gpio_12_io;
-  logic gpio_13_io;
-  logic gpio_14_io;
-  logic gpio_15_io;
-  logic gpio_16_io;
-  logic gpio_17_io;
-  logic gpio_18_io;
-  logic gpio_19_io;
-  logic gpio_20_io;
-  logic gpio_21_io;
-  logic gpio_22_io;
-  logic gpio_23_io;
-  logic gpio_24_io;
-  logic gpio_25_io;
-  logic gpio_26_io;
-  logic gpio_27_io;
-  logic gpio_28_io;
-  logic gpio_29_io;
-  logic gpio_30_io;
-  logic gpio_31_io;
+  assign gpio_2_in_x = GPIO_out_signal[0];
+  assign gpio_3_in_x = GPIO_out_signal[1];
+  assign gpio_4_in_x = GPIO_out_signal[2];
+  assign gpio_5_in_x = GPIO_out_signal[3];
+  assign gpio_6_in_x = GPIO_out_signal[4];
+  assign gpio_7_in_x = GPIO_out_signal[5];
+  assign gpio_8_in_x = GPIO_out_signal[6];
+  assign gpio_9_in_x = GPIO_out_signal[7];
+  assign gpio_10_in_x = GPIO_out_signal[8];
+  assign gpio_11_in_x = GPIO_out_signal[9];
+  assign gpio_12_in_x = GPIO_out_signal[10];
+  assign gpio_13_in_x = GPIO_out_signal[11];
+  assign gpio_14_in_x = GPIO_out_signal[12];
+  assign gpio_15_in_x = GPIO_out_signal[13];
+  assign gpio_16_in_x = GPIO_out_signal[14];
+  assign gpio_17_in_x = GPIO_out_signal[15];
+  assign gpio_18_in_x = GPIO_out_signal[16];
+  assign gpio_19_in_x = GPIO_out_signal[17];
+  assign gpio_20_in_x = GPIO_out_signal[18];
+  assign gpio_21_in_x = GPIO_out_signal[19];
+  assign gpio_22_in_x = GPIO_out_signal[20];
+  assign gpio_23_in_x = GPIO_out_signal[21];
+  assign gpio_24_in_x = GPIO_out_signal[22];
+  assign gpio_25_in_x = GPIO_out_signal[23];
+  assign gpio_26_in_x = GPIO_out_signal[24];
+  assign gpio_27_in_x = GPIO_out_signal[25];
+  assign gpio_28_in_x = GPIO_out_signal[26];
+  assign gpio_29_in_x = GPIO_out_signal[27];
+  assign gpio_30_in_x = GPIO_out_signal[28];
+  assign gpio_31_in_x = GPIO_out_signal[29];
 
-  assign gpio_io[2] = gpio_2_io;
-  assign gpio_io[3] = gpio_3_io;
-  assign gpio_io[4] = gpio_4_io;
-  assign gpio_io[5] = gpio_5_io;
-  assign gpio_io[6] = gpio_6_io;
-  assign gpio_io[7] = gpio_7_io;
-  assign gpio_io[8] = gpio_8_io;
-  assign gpio_io[9] = gpio_9_io;
-  assign gpio_io[10] = gpio_10_io;
-  assign gpio_io[11] = gpio_11_io;
-  assign gpio_io[12] = gpio_12_io;
-  assign gpio_io[13] = gpio_13_io;
-  assign gpio_io[14] = gpio_14_io;
-  assign gpio_io[15] = gpio_15_io;
-  assign gpio_io[16] = gpio_16_io;
-  assign gpio_io[17] = gpio_17_io;
-  assign gpio_io[18] = gpio_18_io;
-  assign gpio_io[19] = gpio_19_io;
-  assign gpio_io[20] = gpio_20_io;
-  assign gpio_io[21] = gpio_21_io;
-  assign gpio_io[22] = gpio_22_io;
-  assign gpio_io[23] = gpio_23_io;
-  assign gpio_io[24] = gpio_24_io;
-  assign gpio_io[25] = gpio_25_io;
-  assign gpio_io[26] = gpio_26_io;
-  assign gpio_io[27] = gpio_27_io;
-  assign gpio_io[28] = gpio_28_io;
-  assign gpio_io[29] = gpio_29_io;
-  assign gpio_io[30] = gpio_30_io;
-  assign gpio_io[31] = gpio_31_io;
+  assign GPIO_in_signal[0] = gpio_2_out_x;
+  assign GPIO_in_signal[1] = gpio_3_out_x;
+  assign GPIO_in_signal[2] = gpio_4_out_x;
+  assign GPIO_in_signal[3] = gpio_5_out_x;
+  assign GPIO_in_signal[4] = gpio_6_out_x;
+  assign GPIO_in_signal[5] = gpio_7_out_x;
+  assign GPIO_in_signal[6] = gpio_8_out_x;
+  assign GPIO_in_signal[7] = gpio_9_out_x;
+  assign GPIO_in_signal[8] = gpio_10_out_x;
+  assign GPIO_in_signal[9] = gpio_11_out_x;
+  assign GPIO_in_signal[10] = gpio_12_out_x;
+  assign GPIO_in_signal[11] = gpio_13_out_x;
+  assign GPIO_in_signal[12] = gpio_14_out_x;
+  assign GPIO_in_signal[13] = gpio_15_out_x;
+  assign GPIO_in_signal[14] = gpio_16_out_x;
+  assign GPIO_in_signal[15] = gpio_17_out_x;
+  assign GPIO_in_signal[16] = gpio_18_out_x;
+  assign GPIO_in_signal[17] = gpio_19_out_x;
+  assign GPIO_in_signal[18] = gpio_20_out_x;
+  assign GPIO_in_signal[19] = gpio_21_out_x;
+  assign GPIO_in_signal[20] = gpio_22_out_x;
+  assign GPIO_in_signal[21] = gpio_23_out_x;
+  assign GPIO_in_signal[22] = gpio_24_out_x;
+  assign GPIO_in_signal[23] = gpio_25_out_x;
+  assign GPIO_in_signal[24] = gpio_26_out_x;
+  assign GPIO_in_signal[25] = gpio_27_out_x;
+  assign GPIO_in_signal[26] = gpio_28_out_x;
+  assign GPIO_in_signal[27] = gpio_29_out_x;
+  assign GPIO_in_signal[28] = gpio_30_out_x;
+  assign GPIO_in_signal[29] = gpio_31_out_x;
 
   processing_system_wrapper processing_system_wrapper_i (
     .DDR_addr(DDR_addr),
@@ -849,6 +850,9 @@ module femu
     .gpio_reset_o(gpio_reset),
     .gpio_boot_select_o(gpio_boot_select),
     .gpio_execute_from_flash_o(gpio_execute_from_flash),
+
+    .GPIO_in(GPIO_in_signal),
+    .GPIO_out(GPIO_out_signal),
 
     .X_HEEP_CLK(clk_in_x),
     .X_HEEP_RSTN(rst_ngen),
@@ -1495,126 +1499,36 @@ module femu
 
 
 
-    .gpio_2_io(gpio_2_io),
-    .gpio_2_o(gpio_2_in_x),
-    .gpio_2_i(gpio_2_out_x),
-    .gpio_2_oe_i(gpio_2_oe_x),
-    .gpio_3_io(gpio_3_io),
-    .gpio_3_o(gpio_3_in_x),
-    .gpio_3_i(gpio_3_out_x),
-    .gpio_3_oe_i(gpio_3_oe_x),
-    .gpio_4_io(gpio_4_io),
-    .gpio_4_o(gpio_4_in_x),
-    .gpio_4_i(gpio_4_out_x),
-    .gpio_4_oe_i(gpio_4_oe_x),
-    .gpio_5_io(gpio_5_io),
-    .gpio_5_o(gpio_5_in_x),
-    .gpio_5_i(gpio_5_out_x),
-    .gpio_5_oe_i(gpio_5_oe_x),
-    .gpio_6_io(gpio_6_io),
-    .gpio_6_o(gpio_6_in_x),
-    .gpio_6_i(gpio_6_out_x),
-    .gpio_6_oe_i(gpio_6_oe_x),
-    .gpio_7_io(gpio_7_io),
-    .gpio_7_o(gpio_7_in_x),
-    .gpio_7_i(gpio_7_out_x),
-    .gpio_7_oe_i(gpio_7_oe_x),
-    .gpio_8_io(gpio_8_io),
-    .gpio_8_o(gpio_8_in_x),
-    .gpio_8_i(gpio_8_out_x),
-    .gpio_8_oe_i(gpio_8_oe_x),
-    .gpio_9_io(gpio_9_io),
-    .gpio_9_o(gpio_9_in_x),
-    .gpio_9_i(gpio_9_out_x),
-    .gpio_9_oe_i(gpio_9_oe_x),
-    .gpio_10_io(gpio_10_io),
-    .gpio_10_o(gpio_10_in_x),
-    .gpio_10_i(gpio_10_out_x),
-    .gpio_10_oe_i(gpio_10_oe_x),
-    .gpio_11_io(gpio_11_io),
-    .gpio_11_o(gpio_11_in_x),
-    .gpio_11_i(gpio_11_out_x),
-    .gpio_11_oe_i(gpio_11_oe_x),
-    .gpio_12_io(gpio_12_io),
-    .gpio_12_o(gpio_12_in_x),
-    .gpio_12_i(gpio_12_out_x),
-    .gpio_12_oe_i(gpio_12_oe_x),
-    .gpio_13_io(gpio_13_io),
-    .gpio_13_o(gpio_13_in_x),
-    .gpio_13_i(gpio_13_out_x),
-    .gpio_13_oe_i(gpio_13_oe_x),
-    .gpio_14_io(gpio_14_io),
-    .gpio_14_o(gpio_14_in_x),
-    .gpio_14_i(gpio_14_out_x),
-    .gpio_14_oe_i(gpio_14_oe_x),
-    .gpio_15_io(gpio_15_io),
-    .gpio_15_o(gpio_15_in_x),
-    .gpio_15_i(gpio_15_out_x),
-    .gpio_15_oe_i(gpio_15_oe_x),
-    .gpio_16_io(gpio_16_io),
-    .gpio_16_o(gpio_16_in_x),
-    .gpio_16_i(gpio_16_out_x),
-    .gpio_16_oe_i(gpio_16_oe_x),
-    .gpio_17_io(gpio_17_io),
-    .gpio_17_o(gpio_17_in_x),
-    .gpio_17_i(gpio_17_out_x),
-    .gpio_17_oe_i(gpio_17_oe_x),
-    .gpio_18_io(gpio_18_io),
-    .gpio_18_o(gpio_18_in_x),
-    .gpio_18_i(gpio_18_out_x),
-    .gpio_18_oe_i(gpio_18_oe_x),
-    .gpio_19_io(gpio_19_io),
-    .gpio_19_o(gpio_19_in_x),
-    .gpio_19_i(gpio_19_out_x),
-    .gpio_19_oe_i(gpio_19_oe_x),
-    .gpio_20_io(gpio_20_io),
-    .gpio_20_o(gpio_20_in_x),
-    .gpio_20_i(gpio_20_out_x),
-    .gpio_20_oe_i(gpio_20_oe_x),
-    .gpio_21_io(gpio_21_io),
-    .gpio_21_o(gpio_21_in_x),
-    .gpio_21_i(gpio_21_out_x),
-    .gpio_21_oe_i(gpio_21_oe_x),
-    .gpio_22_io(gpio_22_io),
-    .gpio_22_o(gpio_22_in_x),
-    .gpio_22_i(gpio_22_out_x),
-    .gpio_22_oe_i(gpio_22_oe_x),
-    .gpio_23_io(gpio_23_io),
-    .gpio_23_o(gpio_23_in_x),
-    .gpio_23_i(gpio_23_out_x),
-    .gpio_23_oe_i(gpio_23_oe_x),
-    .gpio_24_io(gpio_24_io),
-    .gpio_24_o(gpio_24_in_x),
-    .gpio_24_i(gpio_24_out_x),
-    .gpio_24_oe_i(gpio_24_oe_x),
-    .gpio_25_io(gpio_25_io),
-    .gpio_25_o(gpio_25_in_x),
-    .gpio_25_i(gpio_25_out_x),
-    .gpio_25_oe_i(gpio_25_oe_x),
-    .gpio_26_io(gpio_26_io),
-    .gpio_26_o(gpio_26_in_x),
-    .gpio_26_i(gpio_26_out_x),
-    .gpio_26_oe_i(gpio_26_oe_x),
-    .gpio_27_io(gpio_27_io),
-    .gpio_27_o(gpio_27_in_x),
-    .gpio_27_i(gpio_27_out_x),
-    .gpio_27_oe_i(gpio_27_oe_x),
-    .gpio_28_io(gpio_28_io),
-    .gpio_28_o(gpio_28_in_x),
-    .gpio_28_i(gpio_28_out_x),
-    .gpio_28_oe_i(gpio_28_oe_x),
-    .gpio_29_io(gpio_29_io),
-    .gpio_29_o(gpio_29_in_x),
-    .gpio_29_i(gpio_29_out_x),
-    .gpio_29_oe_i(gpio_29_oe_x),
-    .gpio_30_io(gpio_30_io),
-    .gpio_30_o(gpio_30_in_x),
-    .gpio_30_i(gpio_30_out_x),
-    .gpio_30_oe_i(gpio_30_oe_x),
-    .gpio_31_io(gpio_31_io),
-    .gpio_31_o(gpio_31_in_x),
-    .gpio_31_i(gpio_31_out_x),
-    .gpio_31_oe_i(gpio_31_oe_x),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

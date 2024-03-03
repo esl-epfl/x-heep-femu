@@ -70,19 +70,9 @@
             keep_internal: True
             type: output
         },
-        gpio_0: {
-            num: 1,
-            keep_internal: True
-            type: inout
-        },
-        gpio_1: {
-            num: 1,
-            keep_internal: True
-            type: inout
-        },
         gpio: {
-            num: 30,
-            num_offset: 2,
+            num: 32,
+            keep_internal: True,
             type: inout
         },
         spi_flash_sck: {
